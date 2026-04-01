@@ -43,3 +43,5 @@ lerna-debug.log*
 
 # docker
 docker-compose.override.yml
+
+/generated/prisma
