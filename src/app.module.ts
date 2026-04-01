@@ -4,6 +4,7 @@ import { LoggerModule } from 'nestjs-pino';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { PrismaModule } from './prisma/prisma.module';
       },
     }),
     PrismaModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [AppService],
