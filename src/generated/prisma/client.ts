@@ -45,6 +45,16 @@ export { Prisma }
  */
 export type User = Prisma.UserModel
 /**
+ * Model Contact
+ * 
+ */
+export type Contact = Prisma.ContactModel
+/**
+ * Model BlockedUser
+ * 
+ */
+export type BlockedUser = Prisma.BlockedUserModel
+/**
  * Model RefreshToken
  * 
  */
