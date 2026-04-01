@@ -7,6 +7,8 @@ import { PrismaModule } from './prisma/prisma.module';
 import { ChatModule } from './chat/chat.module';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ContactsModule } from './contacts/contacts.module';
+import { BlockedUsersModule } from './blocked-users/blocked-users.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { UsersModule } from './users/users.module';
     }),
     PrismaModule,
     UsersModule,
+    ContactsModule,
+    BlockedUsersModule,
     ChatModule,
     AuthModule,
   ],

@@ -52,6 +52,8 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  Contact: 'Contact',
+  BlockedUser: 'BlockedUser',
   RefreshToken: 'RefreshToken'
 } as const
 
@@ -91,6 +93,24 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const ContactScalarFieldEnum = {
+  user_id: 'user_id',
+  contact_id: 'contact_id',
+  created_at: 'created_at'
+} as const
+
+export type ContactScalarFieldEnum = (typeof ContactScalarFieldEnum)[keyof typeof ContactScalarFieldEnum]
+
+
+export const BlockedUserScalarFieldEnum = {
+  user_id: 'user_id',
+  blocked_user_id: 'blocked_user_id',
+  created_at: 'created_at'
+} as const
+
+export type BlockedUserScalarFieldEnum = (typeof BlockedUserScalarFieldEnum)[keyof typeof BlockedUserScalarFieldEnum]
 
 
 export const RefreshTokenScalarFieldEnum = {

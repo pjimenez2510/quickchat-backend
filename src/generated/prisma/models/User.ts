@@ -271,6 +271,10 @@ export type UserWhereInput = {
   created_at?: Prisma.DateTimeFilter<"User"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"User"> | Date | string
   refresh_tokens?: Prisma.RefreshTokenListRelationFilter
+  contacts_as_user?: Prisma.ContactListRelationFilter
+  contacts_as_contact?: Prisma.ContactListRelationFilter
+  blocked_by_me?: Prisma.BlockedUserListRelationFilter
+  blocked_me?: Prisma.BlockedUserListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -291,6 +295,10 @@ export type UserOrderByWithRelationInput = {
   created_at?: Prisma.SortOrder
   updated_at?: Prisma.SortOrder
   refresh_tokens?: Prisma.RefreshTokenOrderByRelationAggregateInput
+  contacts_as_user?: Prisma.ContactOrderByRelationAggregateInput
+  contacts_as_contact?: Prisma.ContactOrderByRelationAggregateInput
+  blocked_by_me?: Prisma.BlockedUserOrderByRelationAggregateInput
+  blocked_me?: Prisma.BlockedUserOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -314,6 +322,10 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   created_at?: Prisma.DateTimeFilter<"User"> | Date | string
   updated_at?: Prisma.DateTimeFilter<"User"> | Date | string
   refresh_tokens?: Prisma.RefreshTokenListRelationFilter
+  contacts_as_user?: Prisma.ContactListRelationFilter
+  contacts_as_contact?: Prisma.ContactListRelationFilter
+  blocked_by_me?: Prisma.BlockedUserListRelationFilter
+  blocked_me?: Prisma.BlockedUserListRelationFilter
 }, "id" | "email" | "phone" | "username">
 
 export type UserOrderByWithAggregationInput = {
@@ -378,6 +390,10 @@ export type UserCreateInput = {
   created_at?: Date | string
   updated_at?: Date | string
   refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  contacts_as_user?: Prisma.ContactCreateNestedManyWithoutUserInput
+  contacts_as_contact?: Prisma.ContactCreateNestedManyWithoutContactInput
+  blocked_by_me?: Prisma.BlockedUserCreateNestedManyWithoutUserInput
+  blocked_me?: Prisma.BlockedUserCreateNestedManyWithoutBlocked_userInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -398,6 +414,10 @@ export type UserUncheckedCreateInput = {
   created_at?: Date | string
   updated_at?: Date | string
   refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  contacts_as_user?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput
+  contacts_as_contact?: Prisma.ContactUncheckedCreateNestedManyWithoutContactInput
+  blocked_by_me?: Prisma.BlockedUserUncheckedCreateNestedManyWithoutUserInput
+  blocked_me?: Prisma.BlockedUserUncheckedCreateNestedManyWithoutBlocked_userInput
 }
 
 export type UserUpdateInput = {
@@ -418,6 +438,10 @@ export type UserUpdateInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  contacts_as_user?: Prisma.ContactUpdateManyWithoutUserNestedInput
+  contacts_as_contact?: Prisma.ContactUpdateManyWithoutContactNestedInput
+  blocked_by_me?: Prisma.BlockedUserUpdateManyWithoutUserNestedInput
+  blocked_me?: Prisma.BlockedUserUpdateManyWithoutBlocked_userNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -438,6 +462,10 @@ export type UserUncheckedUpdateInput = {
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  contacts_as_user?: Prisma.ContactUncheckedUpdateManyWithoutUserNestedInput
+  contacts_as_contact?: Prisma.ContactUncheckedUpdateManyWithoutContactNestedInput
+  blocked_by_me?: Prisma.BlockedUserUncheckedUpdateManyWithoutUserNestedInput
+  blocked_me?: Prisma.BlockedUserUncheckedUpdateManyWithoutBlocked_userNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -583,6 +611,62 @@ export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
 }
 
+export type UserCreateNestedOneWithoutContacts_as_userInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContacts_as_userInput, Prisma.UserUncheckedCreateWithoutContacts_as_userInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContacts_as_userInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutContacts_as_contactInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContacts_as_contactInput, Prisma.UserUncheckedCreateWithoutContacts_as_contactInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContacts_as_contactInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutContacts_as_userNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContacts_as_userInput, Prisma.UserUncheckedCreateWithoutContacts_as_userInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContacts_as_userInput
+  upsert?: Prisma.UserUpsertWithoutContacts_as_userInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutContacts_as_userInput, Prisma.UserUpdateWithoutContacts_as_userInput>, Prisma.UserUncheckedUpdateWithoutContacts_as_userInput>
+}
+
+export type UserUpdateOneRequiredWithoutContacts_as_contactNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutContacts_as_contactInput, Prisma.UserUncheckedCreateWithoutContacts_as_contactInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutContacts_as_contactInput
+  upsert?: Prisma.UserUpsertWithoutContacts_as_contactInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutContacts_as_contactInput, Prisma.UserUpdateWithoutContacts_as_contactInput>, Prisma.UserUncheckedUpdateWithoutContacts_as_contactInput>
+}
+
+export type UserCreateNestedOneWithoutBlocked_by_meInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBlocked_by_meInput, Prisma.UserUncheckedCreateWithoutBlocked_by_meInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBlocked_by_meInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserCreateNestedOneWithoutBlocked_meInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBlocked_meInput, Prisma.UserUncheckedCreateWithoutBlocked_meInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBlocked_meInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutBlocked_by_meNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBlocked_by_meInput, Prisma.UserUncheckedCreateWithoutBlocked_by_meInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBlocked_by_meInput
+  upsert?: Prisma.UserUpsertWithoutBlocked_by_meInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBlocked_by_meInput, Prisma.UserUpdateWithoutBlocked_by_meInput>, Prisma.UserUncheckedUpdateWithoutBlocked_by_meInput>
+}
+
+export type UserUpdateOneRequiredWithoutBlocked_meNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutBlocked_meInput, Prisma.UserUncheckedCreateWithoutBlocked_meInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutBlocked_meInput
+  upsert?: Prisma.UserUpsertWithoutBlocked_meInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutBlocked_meInput, Prisma.UserUpdateWithoutBlocked_meInput>, Prisma.UserUncheckedUpdateWithoutBlocked_meInput>
+}
+
 export type UserCreateNestedOneWithoutRefresh_tokensInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutRefresh_tokensInput, Prisma.UserUncheckedCreateWithoutRefresh_tokensInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutRefresh_tokensInput
@@ -595,6 +679,438 @@ export type UserUpdateOneRequiredWithoutRefresh_tokensNestedInput = {
   upsert?: Prisma.UserUpsertWithoutRefresh_tokensInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRefresh_tokensInput, Prisma.UserUpdateWithoutRefresh_tokensInput>, Prisma.UserUncheckedUpdateWithoutRefresh_tokensInput>
+}
+
+export type UserCreateWithoutContacts_as_userInput = {
+  id?: string
+  email?: string | null
+  phone?: string | null
+  password: string
+  username: string
+  display_name: string
+  avatar_url?: string | null
+  bio?: string | null
+  custom_status?: string | null
+  custom_status_emoji?: string | null
+  activity_visibility?: $Enums.ActivityVisibility
+  is_online?: boolean
+  last_seen_at?: Date | string | null
+  deleted_at?: Date | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  contacts_as_contact?: Prisma.ContactCreateNestedManyWithoutContactInput
+  blocked_by_me?: Prisma.BlockedUserCreateNestedManyWithoutUserInput
+  blocked_me?: Prisma.BlockedUserCreateNestedManyWithoutBlocked_userInput
+}
+
+export type UserUncheckedCreateWithoutContacts_as_userInput = {
+  id?: string
+  email?: string | null
+  phone?: string | null
+  password: string
+  username: string
+  display_name: string
+  avatar_url?: string | null
+  bio?: string | null
+  custom_status?: string | null
+  custom_status_emoji?: string | null
+  activity_visibility?: $Enums.ActivityVisibility
+  is_online?: boolean
+  last_seen_at?: Date | string | null
+  deleted_at?: Date | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  contacts_as_contact?: Prisma.ContactUncheckedCreateNestedManyWithoutContactInput
+  blocked_by_me?: Prisma.BlockedUserUncheckedCreateNestedManyWithoutUserInput
+  blocked_me?: Prisma.BlockedUserUncheckedCreateNestedManyWithoutBlocked_userInput
+}
+
+export type UserCreateOrConnectWithoutContacts_as_userInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutContacts_as_userInput, Prisma.UserUncheckedCreateWithoutContacts_as_userInput>
+}
+
+export type UserCreateWithoutContacts_as_contactInput = {
+  id?: string
+  email?: string | null
+  phone?: string | null
+  password: string
+  username: string
+  display_name: string
+  avatar_url?: string | null
+  bio?: string | null
+  custom_status?: string | null
+  custom_status_emoji?: string | null
+  activity_visibility?: $Enums.ActivityVisibility
+  is_online?: boolean
+  last_seen_at?: Date | string | null
+  deleted_at?: Date | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  contacts_as_user?: Prisma.ContactCreateNestedManyWithoutUserInput
+  blocked_by_me?: Prisma.BlockedUserCreateNestedManyWithoutUserInput
+  blocked_me?: Prisma.BlockedUserCreateNestedManyWithoutBlocked_userInput
+}
+
+export type UserUncheckedCreateWithoutContacts_as_contactInput = {
+  id?: string
+  email?: string | null
+  phone?: string | null
+  password: string
+  username: string
+  display_name: string
+  avatar_url?: string | null
+  bio?: string | null
+  custom_status?: string | null
+  custom_status_emoji?: string | null
+  activity_visibility?: $Enums.ActivityVisibility
+  is_online?: boolean
+  last_seen_at?: Date | string | null
+  deleted_at?: Date | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  contacts_as_user?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput
+  blocked_by_me?: Prisma.BlockedUserUncheckedCreateNestedManyWithoutUserInput
+  blocked_me?: Prisma.BlockedUserUncheckedCreateNestedManyWithoutBlocked_userInput
+}
+
+export type UserCreateOrConnectWithoutContacts_as_contactInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutContacts_as_contactInput, Prisma.UserUncheckedCreateWithoutContacts_as_contactInput>
+}
+
+export type UserUpsertWithoutContacts_as_userInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutContacts_as_userInput, Prisma.UserUncheckedUpdateWithoutContacts_as_userInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutContacts_as_userInput, Prisma.UserUncheckedCreateWithoutContacts_as_userInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutContacts_as_userInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutContacts_as_userInput, Prisma.UserUncheckedUpdateWithoutContacts_as_userInput>
+}
+
+export type UserUpdateWithoutContacts_as_userInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status_emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activity_visibility?: Prisma.EnumActivityVisibilityFieldUpdateOperationsInput | $Enums.ActivityVisibility
+  is_online?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_seen_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  contacts_as_contact?: Prisma.ContactUpdateManyWithoutContactNestedInput
+  blocked_by_me?: Prisma.BlockedUserUpdateManyWithoutUserNestedInput
+  blocked_me?: Prisma.BlockedUserUpdateManyWithoutBlocked_userNestedInput
+}
+
+export type UserUncheckedUpdateWithoutContacts_as_userInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status_emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activity_visibility?: Prisma.EnumActivityVisibilityFieldUpdateOperationsInput | $Enums.ActivityVisibility
+  is_online?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_seen_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  contacts_as_contact?: Prisma.ContactUncheckedUpdateManyWithoutContactNestedInput
+  blocked_by_me?: Prisma.BlockedUserUncheckedUpdateManyWithoutUserNestedInput
+  blocked_me?: Prisma.BlockedUserUncheckedUpdateManyWithoutBlocked_userNestedInput
+}
+
+export type UserUpsertWithoutContacts_as_contactInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutContacts_as_contactInput, Prisma.UserUncheckedUpdateWithoutContacts_as_contactInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutContacts_as_contactInput, Prisma.UserUncheckedCreateWithoutContacts_as_contactInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutContacts_as_contactInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutContacts_as_contactInput, Prisma.UserUncheckedUpdateWithoutContacts_as_contactInput>
+}
+
+export type UserUpdateWithoutContacts_as_contactInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status_emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activity_visibility?: Prisma.EnumActivityVisibilityFieldUpdateOperationsInput | $Enums.ActivityVisibility
+  is_online?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_seen_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  contacts_as_user?: Prisma.ContactUpdateManyWithoutUserNestedInput
+  blocked_by_me?: Prisma.BlockedUserUpdateManyWithoutUserNestedInput
+  blocked_me?: Prisma.BlockedUserUpdateManyWithoutBlocked_userNestedInput
+}
+
+export type UserUncheckedUpdateWithoutContacts_as_contactInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status_emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activity_visibility?: Prisma.EnumActivityVisibilityFieldUpdateOperationsInput | $Enums.ActivityVisibility
+  is_online?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_seen_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  contacts_as_user?: Prisma.ContactUncheckedUpdateManyWithoutUserNestedInput
+  blocked_by_me?: Prisma.BlockedUserUncheckedUpdateManyWithoutUserNestedInput
+  blocked_me?: Prisma.BlockedUserUncheckedUpdateManyWithoutBlocked_userNestedInput
+}
+
+export type UserCreateWithoutBlocked_by_meInput = {
+  id?: string
+  email?: string | null
+  phone?: string | null
+  password: string
+  username: string
+  display_name: string
+  avatar_url?: string | null
+  bio?: string | null
+  custom_status?: string | null
+  custom_status_emoji?: string | null
+  activity_visibility?: $Enums.ActivityVisibility
+  is_online?: boolean
+  last_seen_at?: Date | string | null
+  deleted_at?: Date | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  contacts_as_user?: Prisma.ContactCreateNestedManyWithoutUserInput
+  contacts_as_contact?: Prisma.ContactCreateNestedManyWithoutContactInput
+  blocked_me?: Prisma.BlockedUserCreateNestedManyWithoutBlocked_userInput
+}
+
+export type UserUncheckedCreateWithoutBlocked_by_meInput = {
+  id?: string
+  email?: string | null
+  phone?: string | null
+  password: string
+  username: string
+  display_name: string
+  avatar_url?: string | null
+  bio?: string | null
+  custom_status?: string | null
+  custom_status_emoji?: string | null
+  activity_visibility?: $Enums.ActivityVisibility
+  is_online?: boolean
+  last_seen_at?: Date | string | null
+  deleted_at?: Date | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  contacts_as_user?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput
+  contacts_as_contact?: Prisma.ContactUncheckedCreateNestedManyWithoutContactInput
+  blocked_me?: Prisma.BlockedUserUncheckedCreateNestedManyWithoutBlocked_userInput
+}
+
+export type UserCreateOrConnectWithoutBlocked_by_meInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutBlocked_by_meInput, Prisma.UserUncheckedCreateWithoutBlocked_by_meInput>
+}
+
+export type UserCreateWithoutBlocked_meInput = {
+  id?: string
+  email?: string | null
+  phone?: string | null
+  password: string
+  username: string
+  display_name: string
+  avatar_url?: string | null
+  bio?: string | null
+  custom_status?: string | null
+  custom_status_emoji?: string | null
+  activity_visibility?: $Enums.ActivityVisibility
+  is_online?: boolean
+  last_seen_at?: Date | string | null
+  deleted_at?: Date | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  contacts_as_user?: Prisma.ContactCreateNestedManyWithoutUserInput
+  contacts_as_contact?: Prisma.ContactCreateNestedManyWithoutContactInput
+  blocked_by_me?: Prisma.BlockedUserCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutBlocked_meInput = {
+  id?: string
+  email?: string | null
+  phone?: string | null
+  password: string
+  username: string
+  display_name: string
+  avatar_url?: string | null
+  bio?: string | null
+  custom_status?: string | null
+  custom_status_emoji?: string | null
+  activity_visibility?: $Enums.ActivityVisibility
+  is_online?: boolean
+  last_seen_at?: Date | string | null
+  deleted_at?: Date | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  contacts_as_user?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput
+  contacts_as_contact?: Prisma.ContactUncheckedCreateNestedManyWithoutContactInput
+  blocked_by_me?: Prisma.BlockedUserUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutBlocked_meInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutBlocked_meInput, Prisma.UserUncheckedCreateWithoutBlocked_meInput>
+}
+
+export type UserUpsertWithoutBlocked_by_meInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutBlocked_by_meInput, Prisma.UserUncheckedUpdateWithoutBlocked_by_meInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutBlocked_by_meInput, Prisma.UserUncheckedCreateWithoutBlocked_by_meInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutBlocked_by_meInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutBlocked_by_meInput, Prisma.UserUncheckedUpdateWithoutBlocked_by_meInput>
+}
+
+export type UserUpdateWithoutBlocked_by_meInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status_emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activity_visibility?: Prisma.EnumActivityVisibilityFieldUpdateOperationsInput | $Enums.ActivityVisibility
+  is_online?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_seen_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  contacts_as_user?: Prisma.ContactUpdateManyWithoutUserNestedInput
+  contacts_as_contact?: Prisma.ContactUpdateManyWithoutContactNestedInput
+  blocked_me?: Prisma.BlockedUserUpdateManyWithoutBlocked_userNestedInput
+}
+
+export type UserUncheckedUpdateWithoutBlocked_by_meInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status_emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activity_visibility?: Prisma.EnumActivityVisibilityFieldUpdateOperationsInput | $Enums.ActivityVisibility
+  is_online?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_seen_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  contacts_as_user?: Prisma.ContactUncheckedUpdateManyWithoutUserNestedInput
+  contacts_as_contact?: Prisma.ContactUncheckedUpdateManyWithoutContactNestedInput
+  blocked_me?: Prisma.BlockedUserUncheckedUpdateManyWithoutBlocked_userNestedInput
+}
+
+export type UserUpsertWithoutBlocked_meInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutBlocked_meInput, Prisma.UserUncheckedUpdateWithoutBlocked_meInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutBlocked_meInput, Prisma.UserUncheckedCreateWithoutBlocked_meInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutBlocked_meInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutBlocked_meInput, Prisma.UserUncheckedUpdateWithoutBlocked_meInput>
+}
+
+export type UserUpdateWithoutBlocked_meInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status_emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activity_visibility?: Prisma.EnumActivityVisibilityFieldUpdateOperationsInput | $Enums.ActivityVisibility
+  is_online?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_seen_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  contacts_as_user?: Prisma.ContactUpdateManyWithoutUserNestedInput
+  contacts_as_contact?: Prisma.ContactUpdateManyWithoutContactNestedInput
+  blocked_by_me?: Prisma.BlockedUserUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutBlocked_meInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status_emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activity_visibility?: Prisma.EnumActivityVisibilityFieldUpdateOperationsInput | $Enums.ActivityVisibility
+  is_online?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_seen_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  contacts_as_user?: Prisma.ContactUncheckedUpdateManyWithoutUserNestedInput
+  contacts_as_contact?: Prisma.ContactUncheckedUpdateManyWithoutContactNestedInput
+  blocked_by_me?: Prisma.BlockedUserUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRefresh_tokensInput = {
@@ -614,6 +1130,10 @@ export type UserCreateWithoutRefresh_tokensInput = {
   deleted_at?: Date | string | null
   created_at?: Date | string
   updated_at?: Date | string
+  contacts_as_user?: Prisma.ContactCreateNestedManyWithoutUserInput
+  contacts_as_contact?: Prisma.ContactCreateNestedManyWithoutContactInput
+  blocked_by_me?: Prisma.BlockedUserCreateNestedManyWithoutUserInput
+  blocked_me?: Prisma.BlockedUserCreateNestedManyWithoutBlocked_userInput
 }
 
 export type UserUncheckedCreateWithoutRefresh_tokensInput = {
@@ -633,6 +1153,10 @@ export type UserUncheckedCreateWithoutRefresh_tokensInput = {
   deleted_at?: Date | string | null
   created_at?: Date | string
   updated_at?: Date | string
+  contacts_as_user?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput
+  contacts_as_contact?: Prisma.ContactUncheckedCreateNestedManyWithoutContactInput
+  blocked_by_me?: Prisma.BlockedUserUncheckedCreateNestedManyWithoutUserInput
+  blocked_me?: Prisma.BlockedUserUncheckedCreateNestedManyWithoutBlocked_userInput
 }
 
 export type UserCreateOrConnectWithoutRefresh_tokensInput = {
@@ -668,6 +1192,10 @@ export type UserUpdateWithoutRefresh_tokensInput = {
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contacts_as_user?: Prisma.ContactUpdateManyWithoutUserNestedInput
+  contacts_as_contact?: Prisma.ContactUpdateManyWithoutContactNestedInput
+  blocked_by_me?: Prisma.BlockedUserUpdateManyWithoutUserNestedInput
+  blocked_me?: Prisma.BlockedUserUpdateManyWithoutBlocked_userNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefresh_tokensInput = {
@@ -687,6 +1215,10 @@ export type UserUncheckedUpdateWithoutRefresh_tokensInput = {
   deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  contacts_as_user?: Prisma.ContactUncheckedUpdateManyWithoutUserNestedInput
+  contacts_as_contact?: Prisma.ContactUncheckedUpdateManyWithoutContactNestedInput
+  blocked_by_me?: Prisma.BlockedUserUncheckedUpdateManyWithoutUserNestedInput
+  blocked_me?: Prisma.BlockedUserUncheckedUpdateManyWithoutBlocked_userNestedInput
 }
 
 
@@ -696,10 +1228,18 @@ export type UserUncheckedUpdateWithoutRefresh_tokensInput = {
 
 export type UserCountOutputType = {
   refresh_tokens: number
+  contacts_as_user: number
+  contacts_as_contact: number
+  blocked_by_me: number
+  blocked_me: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   refresh_tokens?: boolean | UserCountOutputTypeCountRefresh_tokensArgs
+  contacts_as_user?: boolean | UserCountOutputTypeCountContacts_as_userArgs
+  contacts_as_contact?: boolean | UserCountOutputTypeCountContacts_as_contactArgs
+  blocked_by_me?: boolean | UserCountOutputTypeCountBlocked_by_meArgs
+  blocked_me?: boolean | UserCountOutputTypeCountBlocked_meArgs
 }
 
 /**
@@ -717,6 +1257,34 @@ export type UserCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensi
  */
 export type UserCountOutputTypeCountRefresh_tokensArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.RefreshTokenWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountContacts_as_userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContactWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountContacts_as_contactArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ContactWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountBlocked_by_meArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BlockedUserWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountBlocked_meArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.BlockedUserWhereInput
 }
 
 
@@ -738,6 +1306,10 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   created_at?: boolean
   updated_at?: boolean
   refresh_tokens?: boolean | Prisma.User$refresh_tokensArgs<ExtArgs>
+  contacts_as_user?: boolean | Prisma.User$contacts_as_userArgs<ExtArgs>
+  contacts_as_contact?: boolean | Prisma.User$contacts_as_contactArgs<ExtArgs>
+  blocked_by_me?: boolean | Prisma.User$blocked_by_meArgs<ExtArgs>
+  blocked_me?: boolean | Prisma.User$blocked_meArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -801,6 +1373,10 @@ export type UserSelectScalar = {
 export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "email" | "phone" | "password" | "username" | "display_name" | "avatar_url" | "bio" | "custom_status" | "custom_status_emoji" | "activity_visibility" | "is_online" | "last_seen_at" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   refresh_tokens?: boolean | Prisma.User$refresh_tokensArgs<ExtArgs>
+  contacts_as_user?: boolean | Prisma.User$contacts_as_userArgs<ExtArgs>
+  contacts_as_contact?: boolean | Prisma.User$contacts_as_contactArgs<ExtArgs>
+  blocked_by_me?: boolean | Prisma.User$blocked_by_meArgs<ExtArgs>
+  blocked_me?: boolean | Prisma.User$blocked_meArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -810,6 +1386,10 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   name: "User"
   objects: {
     refresh_tokens: Prisma.$RefreshTokenPayload<ExtArgs>[]
+    contacts_as_user: Prisma.$ContactPayload<ExtArgs>[]
+    contacts_as_contact: Prisma.$ContactPayload<ExtArgs>[]
+    blocked_by_me: Prisma.$BlockedUserPayload<ExtArgs>[]
+    blocked_me: Prisma.$BlockedUserPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1223,6 +1803,10 @@ readonly fields: UserFieldRefs;
 export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   refresh_tokens<T extends Prisma.User$refresh_tokensArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$refresh_tokensArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RefreshTokenPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contacts_as_user<T extends Prisma.User$contacts_as_userArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$contacts_as_userArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  contacts_as_contact<T extends Prisma.User$contacts_as_contactArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$contacts_as_contactArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ContactPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  blocked_by_me<T extends Prisma.User$blocked_by_meArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$blocked_by_meArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlockedUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  blocked_me<T extends Prisma.User$blocked_meArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$blocked_meArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$BlockedUserPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1682,6 +2266,102 @@ export type User$refresh_tokensArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.RefreshTokenScalarFieldEnum | Prisma.RefreshTokenScalarFieldEnum[]
+}
+
+/**
+ * User.contacts_as_user
+ */
+export type User$contacts_as_userArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Contact
+   */
+  select?: Prisma.ContactSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Contact
+   */
+  omit?: Prisma.ContactOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContactInclude<ExtArgs> | null
+  where?: Prisma.ContactWhereInput
+  orderBy?: Prisma.ContactOrderByWithRelationInput | Prisma.ContactOrderByWithRelationInput[]
+  cursor?: Prisma.ContactWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContactScalarFieldEnum | Prisma.ContactScalarFieldEnum[]
+}
+
+/**
+ * User.contacts_as_contact
+ */
+export type User$contacts_as_contactArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Contact
+   */
+  select?: Prisma.ContactSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Contact
+   */
+  omit?: Prisma.ContactOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ContactInclude<ExtArgs> | null
+  where?: Prisma.ContactWhereInput
+  orderBy?: Prisma.ContactOrderByWithRelationInput | Prisma.ContactOrderByWithRelationInput[]
+  cursor?: Prisma.ContactWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ContactScalarFieldEnum | Prisma.ContactScalarFieldEnum[]
+}
+
+/**
+ * User.blocked_by_me
+ */
+export type User$blocked_by_meArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BlockedUser
+   */
+  select?: Prisma.BlockedUserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BlockedUser
+   */
+  omit?: Prisma.BlockedUserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockedUserInclude<ExtArgs> | null
+  where?: Prisma.BlockedUserWhereInput
+  orderBy?: Prisma.BlockedUserOrderByWithRelationInput | Prisma.BlockedUserOrderByWithRelationInput[]
+  cursor?: Prisma.BlockedUserWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BlockedUserScalarFieldEnum | Prisma.BlockedUserScalarFieldEnum[]
+}
+
+/**
+ * User.blocked_me
+ */
+export type User$blocked_meArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the BlockedUser
+   */
+  select?: Prisma.BlockedUserSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the BlockedUser
+   */
+  omit?: Prisma.BlockedUserOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.BlockedUserInclude<ExtArgs> | null
+  where?: Prisma.BlockedUserWhereInput
+  orderBy?: Prisma.BlockedUserOrderByWithRelationInput | Prisma.BlockedUserOrderByWithRelationInput[]
+  cursor?: Prisma.BlockedUserWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.BlockedUserScalarFieldEnum | Prisma.BlockedUserScalarFieldEnum[]
 }
 
 /**

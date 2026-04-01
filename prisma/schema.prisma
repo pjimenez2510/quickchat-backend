@@ -32,9 +32,37 @@ model User {
   created_at           DateTime           @default(now())
   updated_at           DateTime           @updatedAt
 
-  refresh_tokens RefreshToken[]
+  refresh_tokens       RefreshToken[]
+  contacts_as_user     Contact[]      @relation("ContactUser")
+  contacts_as_contact  Contact[]      @relation("ContactContact")
+  blocked_by_me        BlockedUser[]  @relation("BlockerUser")
+  blocked_me           BlockedUser[]  @relation("BlockedUser")
 
   @@map("users")
+}
+
+model Contact {
+  user_id    String
+  contact_id String
+  created_at DateTime @default(now())
+
+  user    User @relation("ContactUser", fields: [user_id], references: [id], onDelete: Cascade)
+  contact User @relation("ContactContact", fields: [contact_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, contact_id])
+  @@map("contacts")
+}
+
+model BlockedUser {
+  user_id         String
+  blocked_user_id String
+  created_at      DateTime @default(now())
+
+  user         User @relation("BlockerUser", fields: [user_id], references: [id], onDelete: Cascade)
+  blocked_user User @relation("BlockedUser", fields: [blocked_user_id], references: [id], onDelete: Cascade)
+
+  @@id([user_id, blocked_user_id])
+  @@map("blocked_users")
 }
 
 model RefreshToken {

@@ -9,5 +9,7 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/User.js'
+export type * from './models/Contact.js'
+export type * from './models/BlockedUser.js'
 export type * from './models/RefreshToken.js'
 export type * from './commonInputTypes.js'
