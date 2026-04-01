@@ -9,7 +9,10 @@
 * 🟢 You can import this file directly.
 */
 
+export const ActivityVisibility = {
+  ALL: 'ALL',
+  CONTACTS_ONLY: 'CONTACTS_ONLY',
+  SELECTED_CONTACTS: 'SELECTED_CONTACTS'
+} as const
 
-
-// This file is empty because there are no enums in the schema.
-export {}
+export type ActivityVisibility = (typeof ActivityVisibility)[keyof typeof ActivityVisibility]
