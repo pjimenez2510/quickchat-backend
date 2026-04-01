@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Server, Socket } from 'socket.io';
 import { UsersRepository } from '../users/users.repository.js';
+import { MessagesService } from '../messages/messages.service.js';
 
 @WebSocketGateway({
   cors: {
@@ -33,6 +34,7 @@ export class ChatGateway
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
     private readonly usersRepository: UsersRepository,
+    private readonly messagesService: MessagesService,
   ) {}
 
   afterInit() {
@@ -109,6 +111,68 @@ export class ChatGateway
   ): { event: string; data: string } {
     this.logger.debug(`Ping from ${client.id}: ${JSON.stringify(data)}`);
     return { event: 'pong', data: 'pong' };
+  }
+
+  @SubscribeMessage('message:send')
+  async handleSendMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody()
+    data: {
+      conversationId: string;
+      content?: string;
+      type?: string;
+      mediaUrl?: string;
+      replyToId?: string;
+    },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+
+    try {
+      const result = await this.messagesService.sendMessage(userId, {
+        conversationId: data.conversationId,
+        content: data.content,
+        type: data.type as never,
+        mediaUrl: data.mediaUrl,
+        replyToId: data.replyToId,
+      });
+
+      // Emit to all clients in the conversation
+      this.server.emit('message:new', {
+        conversationId: data.conversationId,
+        message: result.data,
+      });
+
+      return { event: 'message:sent', data: result.data };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to send message';
+      return { event: 'message:error', data: { message } };
+    }
+  }
+
+  @SubscribeMessage('typing:start')
+  handleTypingStart(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { conversationId: string },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    this.server.emit('user:typing', {
+      conversationId: data.conversationId,
+      userId,
+      isTyping: true,
+    });
+  }
+
+  @SubscribeMessage('typing:stop')
+  handleTypingStop(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { conversationId: string },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    this.server.emit('user:typing', {
+      conversationId: data.conversationId,
+      userId,
+      isTyping: false,
+    });
   }
 
   isUserOnline(userId: string): boolean {

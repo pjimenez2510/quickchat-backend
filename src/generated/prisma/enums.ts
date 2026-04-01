@@ -16,3 +16,17 @@ export const ActivityVisibility = {
 } as const
 
 export type ActivityVisibility = (typeof ActivityVisibility)[keyof typeof ActivityVisibility]
+
+
+export const MessageType = {
+  TEXT: 'TEXT',
+  IMAGE: 'IMAGE',
+  VIDEO: 'VIDEO',
+  AUDIO: 'AUDIO',
+  VOICE: 'VOICE',
+  GIF: 'GIF',
+  STICKER: 'STICKER',
+  FILE: 'FILE'
+} as const
+
+export type MessageType = (typeof MessageType)[keyof typeof MessageType]

@@ -9,6 +9,8 @@ import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { ContactsModule } from './contacts/contacts.module';
 import { BlockedUsersModule } from './blocked-users/blocked-users.module';
+import { ConversationsModule } from './conversations/conversations.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { BlockedUsersModule } from './blocked-users/blocked-users.module';
     UsersModule,
     ContactsModule,
     BlockedUsersModule,
+    ConversationsModule,
+    MessagesModule,
     ChatModule,
     AuthModule,
   ],
