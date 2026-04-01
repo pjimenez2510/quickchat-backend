@@ -54,6 +54,9 @@ export const ModelName = {
   User: 'User',
   Contact: 'Contact',
   BlockedUser: 'BlockedUser',
+  Conversation: 'Conversation',
+  Message: 'Message',
+  DeletedMessage: 'DeletedMessage',
   RefreshToken: 'RefreshToken'
 } as const
 
@@ -111,6 +114,48 @@ export const BlockedUserScalarFieldEnum = {
 } as const
 
 export type BlockedUserScalarFieldEnum = (typeof BlockedUserScalarFieldEnum)[keyof typeof BlockedUserScalarFieldEnum]
+
+
+export const ConversationScalarFieldEnum = {
+  id: 'id',
+  participant1_id: 'participant1_id',
+  participant2_id: 'participant2_id',
+  last_message_id: 'last_message_id',
+  archived_by: 'archived_by',
+  marked_unread_by: 'marked_unread_by',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
+
+
+export const MessageScalarFieldEnum = {
+  id: 'id',
+  conversation_id: 'conversation_id',
+  sender_id: 'sender_id',
+  content: 'content',
+  type: 'type',
+  media_url: 'media_url',
+  reply_to_id: 'reply_to_id',
+  is_pinned: 'is_pinned',
+  is_edited: 'is_edited',
+  edited_at: 'edited_at',
+  deleted_for_all: 'deleted_for_all',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+} as const
+
+export type MessageScalarFieldEnum = (typeof MessageScalarFieldEnum)[keyof typeof MessageScalarFieldEnum]
+
+
+export const DeletedMessageScalarFieldEnum = {
+  message_id: 'message_id',
+  user_id: 'user_id',
+  created_at: 'created_at'
+} as const
+
+export type DeletedMessageScalarFieldEnum = (typeof DeletedMessageScalarFieldEnum)[keyof typeof DeletedMessageScalarFieldEnum]
 
 
 export const RefreshTokenScalarFieldEnum = {

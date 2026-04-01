@@ -55,6 +55,21 @@ export type Contact = Prisma.ContactModel
  */
 export type BlockedUser = Prisma.BlockedUserModel
 /**
+ * Model Conversation
+ * 
+ */
+export type Conversation = Prisma.ConversationModel
+/**
+ * Model Message
+ * 
+ */
+export type Message = Prisma.MessageModel
+/**
+ * Model DeletedMessage
+ * 
+ */
+export type DeletedMessage = Prisma.DeletedMessageModel
+/**
  * Model RefreshToken
  * 
  */
