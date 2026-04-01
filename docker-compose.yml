@@ -4,7 +4,7 @@ services:
     container_name: quickchat-db
     restart: unless-stopped
     ports:
-      - "${DB_PORT:-5434}:5432"
+      - "${DB_PORT:-5435}:5432"
     environment:
       POSTGRES_USER: ${DB_USER:-dev}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-quickchat_dev_2026}
