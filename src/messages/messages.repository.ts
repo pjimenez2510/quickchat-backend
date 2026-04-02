@@ -91,4 +91,82 @@ export class MessagesRepository {
       data: { read_at: new Date() },
     });
   }
+
+  update(id: string, data: Record<string, unknown>) {
+    return this.prisma.message.update({
+      where: { id },
+      data,
+      include: {
+        sender: {
+          select: { id: true, username: true, display_name: true, avatar_url: true },
+        },
+        reply_to: {
+          select: { id: true, content: true, sender_id: true, type: true },
+        },
+        reactions: {
+          include: {
+            user: {
+              select: { id: true, username: true, display_name: true },
+            },
+          },
+        },
+      },
+    });
+  }
+
+  deleteForMe(messageId: string, userId: string) {
+    return this.prisma.deletedMessage.create({
+      data: { message_id: messageId, user_id: userId },
+    });
+  }
+
+  deleteForAll(messageId: string) {
+    return this.prisma.message.update({
+      where: { id: messageId },
+      data: { deleted_for_all: true },
+    });
+  }
+
+  addReaction(messageId: string, userId: string, emoji: string) {
+    return this.prisma.messageReaction.upsert({
+      where: { message_id_user_id: { message_id: messageId, user_id: userId } },
+      create: { message_id: messageId, user_id: userId, emoji },
+      update: { emoji },
+    });
+  }
+
+  removeReaction(messageId: string, userId: string) {
+    return this.prisma.messageReaction.delete({
+      where: { message_id_user_id: { message_id: messageId, user_id: userId } },
+    });
+  }
+
+  getReactions(messageId: string) {
+    return this.prisma.messageReaction.findMany({
+      where: { message_id: messageId },
+      include: {
+        user: {
+          select: { id: true, username: true, display_name: true },
+        },
+      },
+    });
+  }
+
+  countPinnedMessages(conversationId: string) {
+    return this.prisma.message.count({
+      where: { conversation_id: conversationId, is_pinned: true },
+    });
+  }
+
+  getPinnedMessages(conversationId: string) {
+    return this.prisma.message.findMany({
+      where: { conversation_id: conversationId, is_pinned: true },
+      include: {
+        sender: {
+          select: { id: true, username: true, display_name: true, avatar_url: true },
+        },
+      },
+      orderBy: { created_at: 'desc' },
+    });
+  }
 }

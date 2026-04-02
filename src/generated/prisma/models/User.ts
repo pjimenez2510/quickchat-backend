@@ -279,6 +279,7 @@ export type UserWhereInput = {
   conversations_p2?: Prisma.ConversationListRelationFilter
   messages_sent?: Prisma.MessageListRelationFilter
   deleted_messages?: Prisma.DeletedMessageListRelationFilter
+  message_reactions?: Prisma.MessageReactionListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -307,6 +308,7 @@ export type UserOrderByWithRelationInput = {
   conversations_p2?: Prisma.ConversationOrderByRelationAggregateInput
   messages_sent?: Prisma.MessageOrderByRelationAggregateInput
   deleted_messages?: Prisma.DeletedMessageOrderByRelationAggregateInput
+  message_reactions?: Prisma.MessageReactionOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -338,6 +340,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   conversations_p2?: Prisma.ConversationListRelationFilter
   messages_sent?: Prisma.MessageListRelationFilter
   deleted_messages?: Prisma.DeletedMessageListRelationFilter
+  message_reactions?: Prisma.MessageReactionListRelationFilter
 }, "id" | "email" | "phone" | "username">
 
 export type UserOrderByWithAggregationInput = {
@@ -410,6 +413,7 @@ export type UserCreateInput = {
   conversations_p2?: Prisma.ConversationCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -438,6 +442,7 @@ export type UserUncheckedCreateInput = {
   conversations_p2?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageUncheckedCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -466,6 +471,7 @@ export type UserUpdateInput = {
   conversations_p2?: Prisma.ConversationUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -494,6 +500,7 @@ export type UserUncheckedUpdateInput = {
   conversations_p2?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUncheckedUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -751,6 +758,20 @@ export type UserUpdateOneRequiredWithoutDeleted_messagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutDeleted_messagesInput, Prisma.UserUpdateWithoutDeleted_messagesInput>, Prisma.UserUncheckedUpdateWithoutDeleted_messagesInput>
 }
 
+export type UserCreateNestedOneWithoutMessage_reactionsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMessage_reactionsInput, Prisma.UserUncheckedCreateWithoutMessage_reactionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMessage_reactionsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutMessage_reactionsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMessage_reactionsInput, Prisma.UserUncheckedCreateWithoutMessage_reactionsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMessage_reactionsInput
+  upsert?: Prisma.UserUpsertWithoutMessage_reactionsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMessage_reactionsInput, Prisma.UserUpdateWithoutMessage_reactionsInput>, Prisma.UserUncheckedUpdateWithoutMessage_reactionsInput>
+}
+
 export type UserCreateNestedOneWithoutRefresh_tokensInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutRefresh_tokensInput, Prisma.UserUncheckedCreateWithoutRefresh_tokensInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutRefresh_tokensInput
@@ -790,6 +811,7 @@ export type UserCreateWithoutContacts_as_userInput = {
   conversations_p2?: Prisma.ConversationCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutContacts_as_userInput = {
@@ -817,6 +839,7 @@ export type UserUncheckedCreateWithoutContacts_as_userInput = {
   conversations_p2?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageUncheckedCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutContacts_as_userInput = {
@@ -849,6 +872,7 @@ export type UserCreateWithoutContacts_as_contactInput = {
   conversations_p2?: Prisma.ConversationCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutContacts_as_contactInput = {
@@ -876,6 +900,7 @@ export type UserUncheckedCreateWithoutContacts_as_contactInput = {
   conversations_p2?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageUncheckedCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutContacts_as_contactInput = {
@@ -919,6 +944,7 @@ export type UserUpdateWithoutContacts_as_userInput = {
   conversations_p2?: Prisma.ConversationUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutContacts_as_userInput = {
@@ -946,6 +972,7 @@ export type UserUncheckedUpdateWithoutContacts_as_userInput = {
   conversations_p2?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUncheckedUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutContacts_as_contactInput = {
@@ -984,6 +1011,7 @@ export type UserUpdateWithoutContacts_as_contactInput = {
   conversations_p2?: Prisma.ConversationUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutContacts_as_contactInput = {
@@ -1011,6 +1039,7 @@ export type UserUncheckedUpdateWithoutContacts_as_contactInput = {
   conversations_p2?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUncheckedUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutBlocked_by_meInput = {
@@ -1038,6 +1067,7 @@ export type UserCreateWithoutBlocked_by_meInput = {
   conversations_p2?: Prisma.ConversationCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBlocked_by_meInput = {
@@ -1065,6 +1095,7 @@ export type UserUncheckedCreateWithoutBlocked_by_meInput = {
   conversations_p2?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageUncheckedCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBlocked_by_meInput = {
@@ -1097,6 +1128,7 @@ export type UserCreateWithoutBlocked_meInput = {
   conversations_p2?: Prisma.ConversationCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutBlocked_meInput = {
@@ -1124,6 +1156,7 @@ export type UserUncheckedCreateWithoutBlocked_meInput = {
   conversations_p2?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageUncheckedCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutBlocked_meInput = {
@@ -1167,6 +1200,7 @@ export type UserUpdateWithoutBlocked_by_meInput = {
   conversations_p2?: Prisma.ConversationUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBlocked_by_meInput = {
@@ -1194,6 +1228,7 @@ export type UserUncheckedUpdateWithoutBlocked_by_meInput = {
   conversations_p2?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUncheckedUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutBlocked_meInput = {
@@ -1232,6 +1267,7 @@ export type UserUpdateWithoutBlocked_meInput = {
   conversations_p2?: Prisma.ConversationUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutBlocked_meInput = {
@@ -1259,6 +1295,7 @@ export type UserUncheckedUpdateWithoutBlocked_meInput = {
   conversations_p2?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUncheckedUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutConversations_p1Input = {
@@ -1286,6 +1323,7 @@ export type UserCreateWithoutConversations_p1Input = {
   conversations_p2?: Prisma.ConversationCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutConversations_p1Input = {
@@ -1313,6 +1351,7 @@ export type UserUncheckedCreateWithoutConversations_p1Input = {
   conversations_p2?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageUncheckedCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutConversations_p1Input = {
@@ -1345,6 +1384,7 @@ export type UserCreateWithoutConversations_p2Input = {
   conversations_p1?: Prisma.ConversationCreateNestedManyWithoutParticipant1Input
   messages_sent?: Prisma.MessageCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutConversations_p2Input = {
@@ -1372,6 +1412,7 @@ export type UserUncheckedCreateWithoutConversations_p2Input = {
   conversations_p1?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant1Input
   messages_sent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageUncheckedCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutConversations_p2Input = {
@@ -1415,6 +1456,7 @@ export type UserUpdateWithoutConversations_p1Input = {
   conversations_p2?: Prisma.ConversationUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConversations_p1Input = {
@@ -1442,6 +1484,7 @@ export type UserUncheckedUpdateWithoutConversations_p1Input = {
   conversations_p2?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUncheckedUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutConversations_p2Input = {
@@ -1480,6 +1523,7 @@ export type UserUpdateWithoutConversations_p2Input = {
   conversations_p1?: Prisma.ConversationUpdateManyWithoutParticipant1NestedInput
   messages_sent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutConversations_p2Input = {
@@ -1507,6 +1551,7 @@ export type UserUncheckedUpdateWithoutConversations_p2Input = {
   conversations_p1?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant1NestedInput
   messages_sent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUncheckedUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMessages_sentInput = {
@@ -1534,6 +1579,7 @@ export type UserCreateWithoutMessages_sentInput = {
   conversations_p1?: Prisma.ConversationCreateNestedManyWithoutParticipant1Input
   conversations_p2?: Prisma.ConversationCreateNestedManyWithoutParticipant2Input
   deleted_messages?: Prisma.DeletedMessageCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMessages_sentInput = {
@@ -1561,6 +1607,7 @@ export type UserUncheckedCreateWithoutMessages_sentInput = {
   conversations_p1?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant1Input
   conversations_p2?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant2Input
   deleted_messages?: Prisma.DeletedMessageUncheckedCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMessages_sentInput = {
@@ -1604,6 +1651,7 @@ export type UserUpdateWithoutMessages_sentInput = {
   conversations_p1?: Prisma.ConversationUpdateManyWithoutParticipant1NestedInput
   conversations_p2?: Prisma.ConversationUpdateManyWithoutParticipant2NestedInput
   deleted_messages?: Prisma.DeletedMessageUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMessages_sentInput = {
@@ -1631,6 +1679,7 @@ export type UserUncheckedUpdateWithoutMessages_sentInput = {
   conversations_p1?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant1NestedInput
   conversations_p2?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant2NestedInput
   deleted_messages?: Prisma.DeletedMessageUncheckedUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutDeleted_messagesInput = {
@@ -1658,6 +1707,7 @@ export type UserCreateWithoutDeleted_messagesInput = {
   conversations_p1?: Prisma.ConversationCreateNestedManyWithoutParticipant1Input
   conversations_p2?: Prisma.ConversationCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  message_reactions?: Prisma.MessageReactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutDeleted_messagesInput = {
@@ -1685,6 +1735,7 @@ export type UserUncheckedCreateWithoutDeleted_messagesInput = {
   conversations_p1?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant1Input
   conversations_p2?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  message_reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutDeleted_messagesInput = {
@@ -1728,6 +1779,7 @@ export type UserUpdateWithoutDeleted_messagesInput = {
   conversations_p1?: Prisma.ConversationUpdateManyWithoutParticipant1NestedInput
   conversations_p2?: Prisma.ConversationUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  message_reactions?: Prisma.MessageReactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutDeleted_messagesInput = {
@@ -1755,6 +1807,135 @@ export type UserUncheckedUpdateWithoutDeleted_messagesInput = {
   conversations_p1?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant1NestedInput
   conversations_p2?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  message_reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutMessage_reactionsInput = {
+  id?: string
+  email?: string | null
+  phone?: string | null
+  password: string
+  username: string
+  display_name: string
+  avatar_url?: string | null
+  bio?: string | null
+  custom_status?: string | null
+  custom_status_emoji?: string | null
+  activity_visibility?: $Enums.ActivityVisibility
+  is_online?: boolean
+  last_seen_at?: Date | string | null
+  deleted_at?: Date | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  refresh_tokens?: Prisma.RefreshTokenCreateNestedManyWithoutUserInput
+  contacts_as_user?: Prisma.ContactCreateNestedManyWithoutUserInput
+  contacts_as_contact?: Prisma.ContactCreateNestedManyWithoutContactInput
+  blocked_by_me?: Prisma.BlockedUserCreateNestedManyWithoutUserInput
+  blocked_me?: Prisma.BlockedUserCreateNestedManyWithoutBlocked_userInput
+  conversations_p1?: Prisma.ConversationCreateNestedManyWithoutParticipant1Input
+  conversations_p2?: Prisma.ConversationCreateNestedManyWithoutParticipant2Input
+  messages_sent?: Prisma.MessageCreateNestedManyWithoutSenderInput
+  deleted_messages?: Prisma.DeletedMessageCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutMessage_reactionsInput = {
+  id?: string
+  email?: string | null
+  phone?: string | null
+  password: string
+  username: string
+  display_name: string
+  avatar_url?: string | null
+  bio?: string | null
+  custom_status?: string | null
+  custom_status_emoji?: string | null
+  activity_visibility?: $Enums.ActivityVisibility
+  is_online?: boolean
+  last_seen_at?: Date | string | null
+  deleted_at?: Date | string | null
+  created_at?: Date | string
+  updated_at?: Date | string
+  refresh_tokens?: Prisma.RefreshTokenUncheckedCreateNestedManyWithoutUserInput
+  contacts_as_user?: Prisma.ContactUncheckedCreateNestedManyWithoutUserInput
+  contacts_as_contact?: Prisma.ContactUncheckedCreateNestedManyWithoutContactInput
+  blocked_by_me?: Prisma.BlockedUserUncheckedCreateNestedManyWithoutUserInput
+  blocked_me?: Prisma.BlockedUserUncheckedCreateNestedManyWithoutBlocked_userInput
+  conversations_p1?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant1Input
+  conversations_p2?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant2Input
+  messages_sent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
+  deleted_messages?: Prisma.DeletedMessageUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutMessage_reactionsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMessage_reactionsInput, Prisma.UserUncheckedCreateWithoutMessage_reactionsInput>
+}
+
+export type UserUpsertWithoutMessage_reactionsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMessage_reactionsInput, Prisma.UserUncheckedUpdateWithoutMessage_reactionsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMessage_reactionsInput, Prisma.UserUncheckedCreateWithoutMessage_reactionsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMessage_reactionsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMessage_reactionsInput, Prisma.UserUncheckedUpdateWithoutMessage_reactionsInput>
+}
+
+export type UserUpdateWithoutMessage_reactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status_emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activity_visibility?: Prisma.EnumActivityVisibilityFieldUpdateOperationsInput | $Enums.ActivityVisibility
+  is_online?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_seen_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refresh_tokens?: Prisma.RefreshTokenUpdateManyWithoutUserNestedInput
+  contacts_as_user?: Prisma.ContactUpdateManyWithoutUserNestedInput
+  contacts_as_contact?: Prisma.ContactUpdateManyWithoutContactNestedInput
+  blocked_by_me?: Prisma.BlockedUserUpdateManyWithoutUserNestedInput
+  blocked_me?: Prisma.BlockedUserUpdateManyWithoutBlocked_userNestedInput
+  conversations_p1?: Prisma.ConversationUpdateManyWithoutParticipant1NestedInput
+  conversations_p2?: Prisma.ConversationUpdateManyWithoutParticipant2NestedInput
+  messages_sent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
+  deleted_messages?: Prisma.DeletedMessageUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMessage_reactionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  username?: Prisma.StringFieldUpdateOperationsInput | string
+  display_name?: Prisma.StringFieldUpdateOperationsInput | string
+  avatar_url?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  custom_status_emoji?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activity_visibility?: Prisma.EnumActivityVisibilityFieldUpdateOperationsInput | $Enums.ActivityVisibility
+  is_online?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  last_seen_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  deleted_at?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  created_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updated_at?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  refresh_tokens?: Prisma.RefreshTokenUncheckedUpdateManyWithoutUserNestedInput
+  contacts_as_user?: Prisma.ContactUncheckedUpdateManyWithoutUserNestedInput
+  contacts_as_contact?: Prisma.ContactUncheckedUpdateManyWithoutContactNestedInput
+  blocked_by_me?: Prisma.BlockedUserUncheckedUpdateManyWithoutUserNestedInput
+  blocked_me?: Prisma.BlockedUserUncheckedUpdateManyWithoutBlocked_userNestedInput
+  conversations_p1?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant1NestedInput
+  conversations_p2?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant2NestedInput
+  messages_sent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
+  deleted_messages?: Prisma.DeletedMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutRefresh_tokensInput = {
@@ -1782,6 +1963,7 @@ export type UserCreateWithoutRefresh_tokensInput = {
   conversations_p2?: Prisma.ConversationCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutRefresh_tokensInput = {
@@ -1809,6 +1991,7 @@ export type UserUncheckedCreateWithoutRefresh_tokensInput = {
   conversations_p2?: Prisma.ConversationUncheckedCreateNestedManyWithoutParticipant2Input
   messages_sent?: Prisma.MessageUncheckedCreateNestedManyWithoutSenderInput
   deleted_messages?: Prisma.DeletedMessageUncheckedCreateNestedManyWithoutUserInput
+  message_reactions?: Prisma.MessageReactionUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutRefresh_tokensInput = {
@@ -1852,6 +2035,7 @@ export type UserUpdateWithoutRefresh_tokensInput = {
   conversations_p2?: Prisma.ConversationUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutRefresh_tokensInput = {
@@ -1879,6 +2063,7 @@ export type UserUncheckedUpdateWithoutRefresh_tokensInput = {
   conversations_p2?: Prisma.ConversationUncheckedUpdateManyWithoutParticipant2NestedInput
   messages_sent?: Prisma.MessageUncheckedUpdateManyWithoutSenderNestedInput
   deleted_messages?: Prisma.DeletedMessageUncheckedUpdateManyWithoutUserNestedInput
+  message_reactions?: Prisma.MessageReactionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1896,6 +2081,7 @@ export type UserCountOutputType = {
   conversations_p2: number
   messages_sent: number
   deleted_messages: number
+  message_reactions: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1908,6 +2094,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   conversations_p2?: boolean | UserCountOutputTypeCountConversations_p2Args
   messages_sent?: boolean | UserCountOutputTypeCountMessages_sentArgs
   deleted_messages?: boolean | UserCountOutputTypeCountDeleted_messagesArgs
+  message_reactions?: boolean | UserCountOutputTypeCountMessage_reactionsArgs
 }
 
 /**
@@ -1983,6 +2170,13 @@ export type UserCountOutputTypeCountDeleted_messagesArgs<ExtArgs extends runtime
   where?: Prisma.DeletedMessageWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountMessage_reactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.MessageReactionWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2010,6 +2204,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   conversations_p2?: boolean | Prisma.User$conversations_p2Args<ExtArgs>
   messages_sent?: boolean | Prisma.User$messages_sentArgs<ExtArgs>
   deleted_messages?: boolean | Prisma.User$deleted_messagesArgs<ExtArgs>
+  message_reactions?: boolean | Prisma.User$message_reactionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -2081,6 +2276,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   conversations_p2?: boolean | Prisma.User$conversations_p2Args<ExtArgs>
   messages_sent?: boolean | Prisma.User$messages_sentArgs<ExtArgs>
   deleted_messages?: boolean | Prisma.User$deleted_messagesArgs<ExtArgs>
+  message_reactions?: boolean | Prisma.User$message_reactionsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2098,6 +2294,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     conversations_p2: Prisma.$ConversationPayload<ExtArgs>[]
     messages_sent: Prisma.$MessagePayload<ExtArgs>[]
     deleted_messages: Prisma.$DeletedMessagePayload<ExtArgs>[]
+    message_reactions: Prisma.$MessageReactionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2519,6 +2716,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   conversations_p2<T extends Prisma.User$conversations_p2Args<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$conversations_p2Args<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   messages_sent<T extends Prisma.User$messages_sentArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$messages_sentArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   deleted_messages<T extends Prisma.User$deleted_messagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$deleted_messagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DeletedMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  message_reactions<T extends Prisma.User$message_reactionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$message_reactionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3170,6 +3368,30 @@ export type User$deleted_messagesArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.DeletedMessageScalarFieldEnum | Prisma.DeletedMessageScalarFieldEnum[]
+}
+
+/**
+ * User.message_reactions
+ */
+export type User$message_reactionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the MessageReaction
+   */
+  select?: Prisma.MessageReactionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the MessageReaction
+   */
+  omit?: Prisma.MessageReactionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.MessageReactionInclude<ExtArgs> | null
+  where?: Prisma.MessageReactionWhereInput
+  orderBy?: Prisma.MessageReactionOrderByWithRelationInput | Prisma.MessageReactionOrderByWithRelationInput[]
+  cursor?: Prisma.MessageReactionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.MessageReactionScalarFieldEnum | Prisma.MessageReactionScalarFieldEnum[]
 }
 
 /**
