@@ -57,6 +57,7 @@ export const ModelName = {
   Conversation: 'Conversation',
   Message: 'Message',
   DeletedMessage: 'DeletedMessage',
+  MessageReaction: 'MessageReaction',
   RefreshToken: 'RefreshToken'
 } as const
 
@@ -158,6 +159,17 @@ export const DeletedMessageScalarFieldEnum = {
 } as const
 
 export type DeletedMessageScalarFieldEnum = (typeof DeletedMessageScalarFieldEnum)[keyof typeof DeletedMessageScalarFieldEnum]
+
+
+export const MessageReactionScalarFieldEnum = {
+  id: 'id',
+  message_id: 'message_id',
+  user_id: 'user_id',
+  emoji: 'emoji',
+  created_at: 'created_at'
+} as const
+
+export type MessageReactionScalarFieldEnum = (typeof MessageReactionScalarFieldEnum)[keyof typeof MessageReactionScalarFieldEnum]
 
 
 export const RefreshTokenScalarFieldEnum = {

@@ -48,6 +48,11 @@ export type Message = Prisma.MessageModel
  */
 export type DeletedMessage = Prisma.DeletedMessageModel
 /**
+ * Model MessageReaction
+ * 
+ */
+export type MessageReaction = Prisma.MessageReactionModel
+/**
  * Model RefreshToken
  * 
  */

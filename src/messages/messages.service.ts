@@ -2,6 +2,7 @@ import {
   Injectable,
   ForbiddenException,
   NotFoundException,
+  BadRequestException,
 } from '@nestjs/common';
 import { MessagesRepository } from './messages.repository.js';
 import { ConversationsRepository } from '../conversations/conversations.repository.js';
@@ -31,6 +32,11 @@ export interface MessageResponse {
     senderId: string;
     type: string;
   } | null;
+  reactions: {
+    emoji: string;
+    userId: string;
+    username: string;
+  }[];
 }
 
 @Injectable()
@@ -118,6 +124,111 @@ export class MessagesService {
     return { otherUserId };
   }
 
+  async editMessage(messageId: string, userId: string, content: string) {
+    const message = await this.messagesRepository.findById(messageId);
+    if (!message) throw new NotFoundException('Message not found');
+    if (message.sender_id !== userId) throw new ForbiddenException('Can only edit your own messages');
+
+    const editLimitMs = 15 * 60 * 1000;
+    if (Date.now() - message.created_at.getTime() > editLimitMs) {
+      throw new BadRequestException('Edit time limit exceeded (15 minutes)');
+    }
+
+    const updated = await this.messagesRepository.update(messageId, {
+      content,
+      is_edited: true,
+      edited_at: new Date(),
+    });
+
+    return {
+      message: 'Message edited successfully',
+      data: this.mapMessage(updated),
+    };
+  }
+
+  async deleteForMe(messageId: string, userId: string) {
+    const message = await this.messagesRepository.findById(messageId);
+    if (!message) throw new NotFoundException('Message not found');
+
+    await this.messagesRepository.deleteForMe(messageId, userId);
+
+    return { message: 'Message deleted for you', data: null };
+  }
+
+  async deleteForAll(messageId: string, userId: string) {
+    const message = await this.messagesRepository.findById(messageId);
+    if (!message) throw new NotFoundException('Message not found');
+    if (message.sender_id !== userId) throw new ForbiddenException('Can only delete your own messages for everyone');
+
+    await this.messagesRepository.deleteForAll(messageId);
+
+    return {
+      message: 'Message deleted for everyone',
+      data: { messageId, conversationId: message.conversation_id },
+    };
+  }
+
+  async addReaction(messageId: string, userId: string, emoji: string) {
+    const message = await this.messagesRepository.findById(messageId);
+    if (!message) throw new NotFoundException('Message not found');
+
+    await this.messagesRepository.addReaction(messageId, userId, emoji);
+    const reactions = await this.messagesRepository.getReactions(messageId);
+
+    return {
+      message: 'Reaction added',
+      data: {
+        messageId,
+        conversationId: message.conversation_id,
+        reactions: reactions.map((r) => ({
+          emoji: r.emoji,
+          userId: r.user_id,
+          username: r.user.username,
+        })),
+      },
+    };
+  }
+
+  async removeReaction(messageId: string, userId: string) {
+    await this.messagesRepository.removeReaction(messageId, userId);
+    return { message: 'Reaction removed', data: null };
+  }
+
+  async togglePin(messageId: string, userId: string) {
+    const message = await this.messagesRepository.findById(messageId);
+    if (!message) throw new NotFoundException('Message not found');
+
+    if (!message.is_pinned) {
+      const pinnedCount = await this.messagesRepository.countPinnedMessages(message.conversation_id);
+      if (pinnedCount >= 5) {
+        throw new BadRequestException('Maximum 5 pinned messages per conversation');
+      }
+    }
+
+    const updated = await this.messagesRepository.update(messageId, {
+      is_pinned: !message.is_pinned,
+    });
+
+    return {
+      message: message.is_pinned ? 'Message unpinned' : 'Message pinned',
+      data: this.mapMessage(updated),
+    };
+  }
+
+  async getPinnedMessages(conversationId: string, userId: string) {
+    const conversation = await this.conversationsRepository.findById(conversationId);
+    if (!conversation) throw new NotFoundException('Conversation not found');
+
+    const isParticipant = conversation.participant1_id === userId || conversation.participant2_id === userId;
+    if (!isParticipant) throw new ForbiddenException('Not a participant');
+
+    const pinned = await this.messagesRepository.getPinnedMessages(conversationId);
+    return {
+      message: 'Pinned messages retrieved',
+      data: pinned.map((m) => this.mapMessage(m)),
+    };
+  }
+
   async markAsDelivered(messageId: string) {
     await this.messagesRepository.markAsDelivered(messageId);
   }
@@ -154,6 +265,7 @@ export class MessagesService {
     created_at: Date;
     sender: { id: string; username: string; display_name: string; avatar_url: string | null };
     reply_to?: { id: string; content: string | null; sender_id: string; type: string } | null;
+    reactions?: { emoji: string; user_id: string; user: { id: string; username: string; display_name: string } }[];
   }): MessageResponse {
     let status: 'sent' | 'delivered' | 'read' = 'sent';
     if (message.read_at) status = 'read';
@@ -184,6 +296,11 @@ export class MessagesService {
             type: message.reply_to.type,
           }
         : null,
+      reactions: (message.reactions ?? []).map((r) => ({
+        emoji: r.emoji,
+        userId: r.user_id,
+        username: r.user.username,
+      })),
     };
   }
 }

@@ -178,6 +178,66 @@ export class ChatGateway
     }
   }
 
+  @SubscribeMessage('message:edit')
+  async handleEditMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { messageId: string; content: string },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    try {
+      const result = await this.messagesService.editMessage(data.messageId, userId, data.content);
+      this.server.emit('message:updated', {
+        messageId: data.messageId,
+        content: data.content,
+        isEdited: true,
+      });
+      return { event: 'message:edited', data: result.data };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to edit message';
+      return { event: 'message:error', data: { message } };
+    }
+  }
+
+  @SubscribeMessage('message:delete')
+  async handleDeleteMessage(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { messageId: string; deleteForAll: boolean },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    try {
+      if (data.deleteForAll) {
+        const result = await this.messagesService.deleteForAll(data.messageId, userId);
+        this.server.emit('message:deleted', {
+          messageId: data.messageId,
+          conversationId: result.data?.conversationId,
+          deletedForAll: true,
+        });
+      } else {
+        await this.messagesService.deleteForMe(data.messageId, userId);
+      }
+      return { event: 'message:deleted:ack', data: { messageId: data.messageId } };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to delete message';
+      return { event: 'message:error', data: { message } };
+    }
+  }
+
+  @SubscribeMessage('message:reaction')
+  async handleReaction(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { messageId: string; emoji: string },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    try {
+      const result = await this.messagesService.addReaction(data.messageId, userId, data.emoji);
+      this.server.emit('message:reaction', result.data);
+      return { event: 'message:reaction:ack', data: result.data };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to react';
+      return { event: 'message:error', data: { message } };
+    }
+  }
+
   @SubscribeMessage('typing:start')
   handleTypingStart(
     @ConnectedSocket() client: Socket,

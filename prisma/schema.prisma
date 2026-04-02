@@ -41,6 +41,7 @@ model User {
   conversations_p2     Conversation[] @relation("Participant2")
   messages_sent        Message[]
   deleted_messages     DeletedMessage[]
+  message_reactions    MessageReaction[]
 
   @@map("users")
 }
@@ -124,6 +125,7 @@ model Message {
   reply_to          Message?        @relation("ReplyTo", fields: [reply_to_id], references: [id])
   replies           Message[]       @relation("ReplyTo")
   deleted_by        DeletedMessage[]
+  reactions         MessageReaction[]
 
   @@index([conversation_id, created_at])
   @@index([conversation_id, is_pinned])
@@ -140,6 +142,21 @@ model DeletedMessage {
 
   @@id([message_id, user_id])
   @@map("deleted_messages")
+}
+
+model MessageReaction {
+  id         String   @id @default(uuid())
+  message_id String
+  user_id    String
+  emoji      String   @db.VarChar(10)
+  created_at DateTime @default(now())
+
+  message Message @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([message_id, user_id])
+  @@index([message_id])
+  @@map("message_reactions")
 }
 
 model RefreshToken {
