@@ -129,11 +129,6 @@ export class AuthService {
 
     await this.storeRefreshToken(user.id, tokens.refreshToken);
 
-    await this.prisma.user.update({
-      where: { id: user.id },
-      data: { is_online: true, last_seen_at: new Date() },
-    });
-
     this.logger.log(`Login successful: ${user.username}`);
 
     return {
@@ -209,11 +204,6 @@ export class AuthService {
     await this.prisma.refreshToken.updateMany({
       where: { user_id: userId, revoked_at: null },
       data: { revoked_at: new Date() },
-    });
-
-    await this.prisma.user.update({
-      where: { id: userId },
-      data: { is_online: false, last_seen_at: new Date() },
     });
 
     this.logger.log(`User logged out: ${userId}`);

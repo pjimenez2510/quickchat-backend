@@ -53,4 +53,11 @@ export class UsersRepository {
       },
     });
   }
+
+  resetAllOnlineStatus() {
+    return this.prisma.user.updateMany({
+      where: { is_online: true },
+      data: { is_online: false, last_seen_at: new Date() },
+    });
+  }
 }

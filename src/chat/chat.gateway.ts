@@ -37,8 +37,10 @@ export class ChatGateway
     private readonly messagesService: MessagesService,
   ) {}
 
-  afterInit() {
-    this.logger.log('WebSocket Gateway initialized');
+  async afterInit() {
+    // Reset all users to offline on server start (cleanup stale status)
+    await this.usersRepository.resetAllOnlineStatus();
+    this.logger.log('WebSocket Gateway initialized — all users reset to offline');
   }
 
   async handleConnection(client: Socket) {
