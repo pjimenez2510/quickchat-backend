@@ -229,6 +229,49 @@ export class MessagesService {
     };
   }
 
+  async searchMessages(conversationId: string, userId: string, query: string) {
+    const conversation = await this.conversationsRepository.findById(conversationId);
+    if (!conversation) throw new NotFoundException('Conversation not found');
+
+    const isParticipant = conversation.participant1_id === userId || conversation.participant2_id === userId;
+    if (!isParticipant) throw new ForbiddenException('Not a participant');
+
+    const messages = await this.messagesRepository.searchInConversation(conversationId, query, userId);
+    return {
+      message: 'Search results',
+      data: messages.map((m) => this.mapMessage(m)),
+    };
+  }
+
+  async forwardMessage(messageId: string, userId: string, targetConversationIds: string[]) {
+    const message = await this.messagesRepository.findById(messageId);
+    if (!message) throw new NotFoundException('Message not found');
+
+    const results = [];
+    for (const convId of targetConversationIds) {
+      const conv = await this.conversationsRepository.findById(convId);
+      if (!conv) continue;
+      const isParticipant = conv.participant1_id === userId || conv.participant2_id === userId;
+      if (!isParticipant) continue;
+
+      const forwarded = await this.messagesRepository.create({
+        conversationId: convId,
+        senderId: userId,
+        content: message.content ?? undefined,
+        type: message.type,
+        mediaUrl: message.media_url ?? undefined,
+      });
+
+      await this.conversationsRepository.updateLastMessage(convId, forwarded.id);
+      results.push(this.mapMessage(forwarded));
+    }
+
+    return {
+      message: `Message forwarded to ${results.length} conversation(s)`,
+      data: results,
+    };
+  }
+
   async markAsDelivered(messageId: string) {
     await this.messagesRepository.markAsDelivered(messageId);
   }

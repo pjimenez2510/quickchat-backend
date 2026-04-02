@@ -80,4 +80,70 @@ export class ConversationsRepository {
       data: { last_message_id: messageId },
     });
   }
+
+  async archive(conversationId: string, userId: string) {
+    const conv = await this.prisma.conversation.findUnique({ where: { id: conversationId } });
+    if (!conv) return null;
+    const archivedBy = conv.archived_by.includes(userId)
+      ? conv.archived_by
+      : [...conv.archived_by, userId];
+    return this.prisma.conversation.update({
+      where: { id: conversationId },
+      data: { archived_by: archivedBy },
+    });
+  }
+
+  async unarchive(conversationId: string, userId: string) {
+    const conv = await this.prisma.conversation.findUnique({ where: { id: conversationId } });
+    if (!conv) return null;
+    return this.prisma.conversation.update({
+      where: { id: conversationId },
+      data: { archived_by: conv.archived_by.filter((id) => id !== userId) },
+    });
+  }
+
+  async markUnread(conversationId: string, userId: string) {
+    const conv = await this.prisma.conversation.findUnique({ where: { id: conversationId } });
+    if (!conv) return null;
+    const markedUnreadBy = conv.marked_unread_by.includes(userId)
+      ? conv.marked_unread_by
+      : [...conv.marked_unread_by, userId];
+    return this.prisma.conversation.update({
+      where: { id: conversationId },
+      data: { marked_unread_by: markedUnreadBy },
+    });
+  }
+
+  async clearUnread(conversationId: string, userId: string) {
+    const conv = await this.prisma.conversation.findUnique({ where: { id: conversationId } });
+    if (!conv) return null;
+    return this.prisma.conversation.update({
+      where: { id: conversationId },
+      data: { marked_unread_by: conv.marked_unread_by.filter((id) => id !== userId) },
+    });
+  }
+
+  findArchivedByUser(userId: string) {
+    return this.prisma.conversation.findMany({
+      where: {
+        OR: [
+          { participant1_id: userId },
+          { participant2_id: userId },
+        ],
+        archived_by: { has: userId },
+      },
+      include: {
+        participant1: {
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+        },
+        participant2: {
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+        },
+        last_message: {
+          select: { id: true, content: true, type: true, sender_id: true, created_at: true },
+        },
+      },
+      orderBy: { updated_at: 'desc' },
+    });
+  }
 }
