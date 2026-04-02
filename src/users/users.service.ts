@@ -42,6 +42,7 @@ export class UsersService {
     const updateData: Record<string, unknown> = {};
     if (dto.username !== undefined) updateData['username'] = dto.username;
     if (dto.displayName !== undefined) updateData['display_name'] = dto.displayName;
+    if (dto.avatarUrl !== undefined) updateData['avatar_url'] = dto.avatarUrl;
     if (dto.bio !== undefined) updateData['bio'] = dto.bio;
     if (dto.customStatus !== undefined) updateData['custom_status'] = dto.customStatus;
     if (dto.customStatusEmoji !== undefined) updateData['custom_status_emoji'] = dto.customStatusEmoji;
