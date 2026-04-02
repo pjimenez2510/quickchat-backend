@@ -1,6 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
 
+const MESSAGE_INCLUDE = {
+  sender: {
+    select: { id: true, username: true, display_name: true, avatar_url: true },
+  },
+  reply_to: {
+    select: { id: true, content: true, sender_id: true, type: true },
+  },
+  reactions: {
+    include: {
+      user: {
+        select: { id: true, username: true, display_name: true },
+      },
+    },
+  },
+} as const;
+
 @Injectable()
 export class MessagesRepository {
   constructor(private readonly prisma: PrismaService) {}
@@ -22,14 +38,7 @@ export class MessagesRepository {
         media_url: data.mediaUrl ?? null,
         reply_to_id: data.replyToId ?? null,
       },
-      include: {
-        sender: {
-          select: { id: true, username: true, display_name: true, avatar_url: true },
-        },
-        reply_to: {
-          select: { id: true, content: true, sender_id: true, type: true },
-        },
-      },
+      include: MESSAGE_INCLUDE,
     });
   }
 
@@ -47,30 +56,17 @@ export class MessagesRepository {
           deleted_by: { some: { user_id: userId } },
         },
       },
-      include: {
-        sender: {
-          select: { id: true, username: true, display_name: true, avatar_url: true },
-        },
-        reply_to: {
-          select: { id: true, content: true, sender_id: true, type: true },
-        },
-      },
+      include: MESSAGE_INCLUDE,
       orderBy: { created_at: 'desc' },
       take,
-      ...(cursor
-        ? { cursor: { id: cursor }, skip: 1 }
-        : {}),
+      ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     });
   }
 
   findById(id: string) {
     return this.prisma.message.findUnique({
       where: { id },
-      include: {
-        sender: {
-          select: { id: true, username: true, display_name: true, avatar_url: true },
-        },
-      },
+      include: MESSAGE_INCLUDE,
     });
   }
 
@@ -96,21 +92,7 @@ export class MessagesRepository {
     return this.prisma.message.update({
       where: { id },
       data,
-      include: {
-        sender: {
-          select: { id: true, username: true, display_name: true, avatar_url: true },
-        },
-        reply_to: {
-          select: { id: true, content: true, sender_id: true, type: true },
-        },
-        reactions: {
-          include: {
-            user: {
-              select: { id: true, username: true, display_name: true },
-            },
-          },
-        },
-      },
+      include: MESSAGE_INCLUDE,
     });
   }
 
@@ -161,11 +143,7 @@ export class MessagesRepository {
   getPinnedMessages(conversationId: string) {
     return this.prisma.message.findMany({
       where: { conversation_id: conversationId, is_pinned: true },
-      include: {
-        sender: {
-          select: { id: true, username: true, display_name: true, avatar_url: true },
-        },
-      },
+      include: MESSAGE_INCLUDE,
       orderBy: { created_at: 'desc' },
     });
   }

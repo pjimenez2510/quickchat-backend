@@ -32,6 +32,11 @@ export interface MessageResponse {
     senderId: string;
     type: string;
   } | null;
+  reactions: {
+    emoji: string;
+    userId: string;
+    username: string;
+  }[];
 }
 
 @Injectable()
@@ -260,6 +265,7 @@ export class MessagesService {
     created_at: Date;
     sender: { id: string; username: string; display_name: string; avatar_url: string | null };
     reply_to?: { id: string; content: string | null; sender_id: string; type: string } | null;
+    reactions?: { emoji: string; user_id: string; user: { id: string; username: string; display_name: string } }[];
   }): MessageResponse {
     let status: 'sent' | 'delivered' | 'read' = 'sent';
     if (message.read_at) status = 'read';
@@ -290,6 +296,11 @@ export class MessagesService {
             type: message.reply_to.type,
           }
         : null,
+      reactions: (message.reactions ?? []).map((r) => ({
+        emoji: r.emoji,
+        userId: r.user_id,
+        username: r.user.username,
+      })),
     };
   }
 }
