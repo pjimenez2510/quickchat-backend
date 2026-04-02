@@ -40,11 +40,11 @@ export class UploadService {
       Bucket: this.bucket,
       Key: key,
       ContentType: dto.contentType,
-      ContentLength: MAX_FILE_SIZE_BYTES,
     });
 
     const uploadUrl = await getSignedUrl(this.s3Client, command, {
-      expiresIn: 300, // 5 minutes
+      expiresIn: 300,
+      unhoistableHeaders: new Set(['content-type']),
     });
 
     const fileUrl = `https://${this.bucket}.s3.${this.region}.amazonaws.com/${key}`;
