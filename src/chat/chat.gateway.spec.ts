@@ -22,15 +22,21 @@ describe('ChatGateway', () => {
         },
         {
           provide: UsersRepository,
-          useValue: { setOnlineStatus: jest.fn().mockResolvedValue({}) },
+          useValue: {
+            setOnlineStatus: jest.fn().mockResolvedValue({}),
+            resetAllOnlineStatus: jest.fn().mockResolvedValue({}),
+          },
         },
         {
           provide: MessagesService,
           useValue: {
             sendMessage: jest.fn().mockResolvedValue({
               message: 'Message sent',
-              data: { id: 'msg-1', content: 'Hello' },
+              data: { id: 'msg-1', content: 'Hello', status: 'sent' },
             }),
+            getConversationParticipants: jest.fn().mockResolvedValue({ otherUserId: 'user-2' }),
+            markAsDelivered: jest.fn().mockResolvedValue(undefined),
+            markAsRead: jest.fn().mockResolvedValue({ conversationId: 'conv-1', userId: 'user-1', readAt: new Date().toISOString() }),
           },
         },
       ],
@@ -59,7 +65,16 @@ describe('ChatGateway', () => {
     expect(result.event).toBe('message:sent');
   });
 
-  it('should handle typing:start', () => {
+  it('should handle message:read', async () => {
+    const mockSocket = { id: 'test-id', data: { userId: 'user-1' } } as never;
+    await gateway.handleMessageRead(mockSocket, { conversationId: 'conv-1' });
+    expect(gateway.server.emit).toHaveBeenCalledWith('message:read', expect.objectContaining({
+      conversationId: 'conv-1',
+      userId: 'user-1',
+    }));
+  });
+
+  it('should handle typing', () => {
     const mockSocket = { id: 'test-id', data: { userId: 'user-1' } } as never;
     gateway.handleTypingStart(mockSocket, { conversationId: 'conv-1' });
     expect(gateway.server.emit).toHaveBeenCalledWith('user:typing', {

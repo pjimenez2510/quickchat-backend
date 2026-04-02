@@ -73,4 +73,22 @@ export class MessagesRepository {
       },
     });
   }
+
+  markAsDelivered(messageId: string) {
+    return this.prisma.message.update({
+      where: { id: messageId },
+      data: { delivered_at: new Date() },
+    });
+  }
+
+  markConversationAsRead(conversationId: string, senderId: string) {
+    return this.prisma.message.updateMany({
+      where: {
+        conversation_id: conversationId,
+        sender_id: senderId,
+        read_at: null,
+      },
+      data: { read_at: new Date() },
+    });
+  }
 }
