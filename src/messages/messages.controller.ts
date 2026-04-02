@@ -14,6 +14,7 @@ import { MessagesService } from './messages.service.js';
 import { SendMessageDto } from './dto/send-message.dto.js';
 import { EditMessageDto } from './dto/edit-message.dto.js';
 import { ReactionDto } from './dto/reaction.dto.js';
+import { ForwardMessageDto } from './dto/forward-message.dto.js';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard.js';
 import { CurrentUser } from '../common/decorators/current-user.decorator.js';
 
@@ -107,5 +108,26 @@ export class MessagesController {
     @Param('conversationId') conversationId: string,
   ) {
     return this.messagesService.getPinnedMessages(conversationId, userId);
+  }
+
+  @Get('conversation/:conversationId/search')
+  @ApiOperation({ summary: 'Search messages in conversation' })
+  @ApiQuery({ name: 'q', required: true })
+  async searchMessages(
+    @CurrentUser('userId') userId: string,
+    @Param('conversationId') conversationId: string,
+    @Query('q') query: string,
+  ) {
+    return this.messagesService.searchMessages(conversationId, userId, query);
+  }
+
+  @Post(':id/forward')
+  @ApiOperation({ summary: 'Forward message to multiple conversations' })
+  async forwardMessage(
+    @CurrentUser('userId') userId: string,
+    @Param('id') messageId: string,
+    @Body() dto: ForwardMessageDto,
+  ) {
+    return this.messagesService.forwardMessage(messageId, userId, dto.targetConversationIds);
   }
 }

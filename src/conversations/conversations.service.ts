@@ -78,6 +78,29 @@ export class ConversationsService {
     };
   }
 
+  async getArchivedConversations(userId: string) {
+    const conversations = await this.conversationsRepository.findArchivedByUser(userId);
+    return {
+      message: 'Archived conversations retrieved',
+      data: conversations.map((c) => this.mapConversation(c, userId)),
+    };
+  }
+
+  async archive(conversationId: string, userId: string) {
+    await this.conversationsRepository.archive(conversationId, userId);
+    return { message: 'Conversation archived', data: null };
+  }
+
+  async unarchive(conversationId: string, userId: string) {
+    await this.conversationsRepository.unarchive(conversationId, userId);
+    return { message: 'Conversation unarchived', data: null };
+  }
+
+  async markUnread(conversationId: string, userId: string) {
+    await this.conversationsRepository.markUnread(conversationId, userId);
+    return { message: 'Conversation marked as unread', data: null };
+  }
+
   private mapConversation(
     conversation: {
       id: string;

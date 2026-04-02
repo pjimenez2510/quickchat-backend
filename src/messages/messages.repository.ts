@@ -134,6 +134,20 @@ export class MessagesRepository {
     });
   }
 
+  searchInConversation(conversationId: string, query: string, userId: string) {
+    return this.prisma.message.findMany({
+      where: {
+        conversation_id: conversationId,
+        content: { contains: query, mode: 'insensitive' },
+        deleted_for_all: false,
+        NOT: { deleted_by: { some: { user_id: userId } } },
+      },
+      include: MESSAGE_INCLUDE,
+      orderBy: { created_at: 'desc' },
+      take: 20,
+    });
+  }
+
   countPinnedMessages(conversationId: string) {
     return this.prisma.message.count({
       where: { conversation_id: conversationId, is_pinned: true },
