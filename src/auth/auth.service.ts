@@ -28,6 +28,10 @@ export interface UserResponse {
   username: string;
   displayName: string;
   avatarUrl: string | null;
+  bio: string | null;
+  customStatus: string | null;
+  customStatusEmoji: string | null;
+  activityVisibility: string;
   isOnline: boolean;
   createdAt: Date;
 }
@@ -273,6 +277,10 @@ export class AuthService {
     username: string;
     display_name: string;
     avatar_url: string | null;
+    bio: string | null;
+    custom_status: string | null;
+    custom_status_emoji: string | null;
+    activity_visibility: string;
     is_online: boolean;
     created_at: Date;
   }): UserResponse {
@@ -283,6 +291,10 @@ export class AuthService {
       username: user.username,
       displayName: user.display_name,
       avatarUrl: user.avatar_url,
+      bio: user.bio,
+      customStatus: user.custom_status,
+      customStatusEmoji: user.custom_status_emoji,
+      activityVisibility: user.activity_visibility,
       isOnline: user.is_online,
       createdAt: user.created_at,
     };

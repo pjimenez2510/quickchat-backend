@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsOptional, IsString, MaxLength, MinLength, Matches, IsEnum } from 'class-validator';
+import { IsOptional, IsString, IsUrl, MaxLength, MinLength, Matches, IsEnum } from 'class-validator';
 
 export enum ActivityVisibilityDto {
   ALL = 'ALL',
@@ -24,6 +24,12 @@ export class UpdateProfileDto {
   @MinLength(1)
   @MaxLength(50)
   displayName?: string;
+
+  @ApiPropertyOptional({ example: 'https://s3.amazonaws.com/quickchat/avatars/photo.jpg' })
+  @IsOptional()
+  @IsString()
+  @MaxLength(2048)
+  avatarUrl?: string;
 
   @ApiPropertyOptional({ example: 'Hola, estoy usando QuickChat!', maxLength: 150 })
   @IsOptional()
