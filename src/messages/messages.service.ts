@@ -17,6 +17,7 @@ export interface MessageResponse {
   isEdited: boolean;
   isPinned: boolean;
   deletedForAll: boolean;
+  status: 'sent' | 'delivered' | 'read';
   createdAt: Date;
   sender: {
     id: string;
@@ -105,6 +106,40 @@ export class MessagesService {
     };
   }
 
+  async getConversationParticipants(conversationId: string, currentUserId: string) {
+    const conversation = await this.conversationsRepository.findById(conversationId);
+    if (!conversation) return null;
+
+    const otherUserId =
+      conversation.participant1_id === currentUserId
+        ? conversation.participant2_id
+        : conversation.participant1_id;
+
+    return { otherUserId };
+  }
+
+  async markAsDelivered(messageId: string) {
+    await this.messagesRepository.markAsDelivered(messageId);
+  }
+
+  async markAsRead(conversationId: string, userId: string) {
+    const conversation = await this.conversationsRepository.findById(conversationId);
+    if (!conversation) return;
+
+    const otherUserId =
+      conversation.participant1_id === userId
+        ? conversation.participant2_id
+        : conversation.participant1_id;
+
+    await this.messagesRepository.markConversationAsRead(conversationId, otherUserId);
+
+    return {
+      conversationId,
+      userId,
+      readAt: new Date().toISOString(),
+    };
+  }
+
   private mapMessage(message: {
     id: string;
     conversation_id: string;
@@ -114,10 +149,16 @@ export class MessagesService {
     is_edited: boolean;
     is_pinned: boolean;
     deleted_for_all: boolean;
+    delivered_at: Date | null;
+    read_at: Date | null;
     created_at: Date;
     sender: { id: string; username: string; display_name: string; avatar_url: string | null };
     reply_to?: { id: string; content: string | null; sender_id: string; type: string } | null;
   }): MessageResponse {
+    let status: 'sent' | 'delivered' | 'read' = 'sent';
+    if (message.read_at) status = 'read';
+    else if (message.delivered_at) status = 'delivered';
+
     return {
       id: message.id,
       conversationId: message.conversation_id,
@@ -127,6 +168,7 @@ export class MessagesService {
       isEdited: message.is_edited,
       isPinned: message.is_pinned,
       deletedForAll: message.deleted_for_all,
+      status,
       createdAt: message.created_at,
       sender: {
         id: message.sender.id,

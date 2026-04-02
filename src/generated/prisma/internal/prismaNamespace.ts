@@ -1033,6 +1033,8 @@ export const MessageScalarFieldEnum = {
   is_edited: 'is_edited',
   edited_at: 'edited_at',
   deleted_for_all: 'deleted_for_all',
+  delivered_at: 'delivered_at',
+  read_at: 'read_at',
   created_at: 'created_at',
   updated_at: 'updated_at'
 } as const

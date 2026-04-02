@@ -138,16 +138,43 @@ export class ChatGateway
         replyToId: data.replyToId,
       });
 
-      // Emit to all clients in the conversation
+      // Emit to all clients
       this.server.emit('message:new', {
         conversationId: data.conversationId,
         message: result.data,
       });
 
+      // Auto-deliver if recipient is online
+      const conversation = await this.messagesService.getConversationParticipants(data.conversationId, userId);
+      if (conversation && this.isUserOnline(conversation.otherUserId)) {
+        await this.messagesService.markAsDelivered(result.data.id);
+        this.server.emit('message:delivered', {
+          messageId: result.data.id,
+          conversationId: data.conversationId,
+        });
+      }
+
       return { event: 'message:sent', data: result.data };
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to send message';
       return { event: 'message:error', data: { message } };
+    }
+  }
+
+  @SubscribeMessage('message:read')
+  async handleMessageRead(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { conversationId: string },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+
+    const result = await this.messagesService.markAsRead(data.conversationId, userId);
+    if (result) {
+      this.server.emit('message:read', {
+        conversationId: data.conversationId,
+        userId,
+        readAt: result.readAt,
+      });
     }
   }
 
