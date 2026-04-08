@@ -12,6 +12,7 @@ import { BlockedUsersModule } from './blocked-users/blocked-users.module';
 import { ConversationsModule } from './conversations/conversations.module';
 import { MessagesModule } from './messages/messages.module';
 import { UploadModule } from './upload/upload.module';
+import { CallsModule } from './calls/calls.module';
 
 @Module({
   imports: [
@@ -33,6 +34,7 @@ import { UploadModule } from './upload/upload.module';
     ConversationsModule,
     MessagesModule,
     UploadModule,
+    CallsModule,
     ChatModule,
     AuthModule,
   ],

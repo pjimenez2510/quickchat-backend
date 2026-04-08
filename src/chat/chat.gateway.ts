@@ -14,6 +14,7 @@ import { ConfigService } from '@nestjs/config';
 import { Server, Socket } from 'socket.io';
 import { UsersRepository } from '../users/users.repository.js';
 import { MessagesService } from '../messages/messages.service.js';
+import { CallsService } from '../calls/calls.service.js';
 
 @WebSocketGateway({
   cors: {
@@ -35,7 +36,16 @@ export class ChatGateway
     private readonly configService: ConfigService,
     private readonly usersRepository: UsersRepository,
     private readonly messagesService: MessagesService,
+    private readonly callsService: CallsService,
   ) {}
+
+  private sendToUser(userId: string, event: string, payload: unknown) {
+    const sockets = this.connectedUsers.get(userId);
+    if (!sockets) return;
+    for (const socketId of sockets) {
+      this.server.to(socketId).emit(event, payload);
+    }
+  }
 
   async afterInit() {
     // Reset all users to offline on server start (cleanup stale status)
@@ -289,6 +299,131 @@ export class ChatGateway
       conversationId: data.conversationId,
       userId,
       isTyping: false,
+    });
+  }
+
+  // ========== CALLS ==========
+
+  @SubscribeMessage('call:initiate')
+  async handleCallInitiate(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { conversationId: string; type: 'AUDIO' | 'VIDEO' },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    try {
+      const result = await this.callsService.initiateCall(userId, data.conversationId, data.type);
+      const call = result.data;
+
+      // Notify callee about incoming call
+      if (this.isUserOnline(call.calleeId)) {
+        this.sendToUser(call.calleeId, 'call:incoming', { call });
+      } else {
+        // Callee is offline - auto-end as missed
+        await this.callsService.endCall(call.id, userId);
+        return { event: 'call:unavailable', data: { message: 'User is offline' } };
+      }
+
+      return { event: 'call:initiated', data: call };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to initiate call';
+      return { event: 'call:error', data: { message } };
+    }
+  }
+
+  @SubscribeMessage('call:answer')
+  async handleCallAnswer(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { callId: string },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    try {
+      const result = await this.callsService.answerCall(data.callId, userId);
+      const call = result.data;
+      // Notify caller that callee accepted
+      this.sendToUser(call.callerId, 'call:accepted', { call });
+      return { event: 'call:answer:ack', data: call };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to answer call';
+      return { event: 'call:error', data: { message } };
+    }
+  }
+
+  @SubscribeMessage('call:reject')
+  async handleCallReject(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { callId: string },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    try {
+      const result = await this.callsService.rejectCall(data.callId, userId);
+      const call = result.data;
+      this.sendToUser(call.callerId, 'call:rejected', { call });
+      return { event: 'call:reject:ack', data: call };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to reject call';
+      return { event: 'call:error', data: { message } };
+    }
+  }
+
+  @SubscribeMessage('call:end')
+  async handleCallEnd(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { callId: string },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    try {
+      const result = await this.callsService.endCall(data.callId, userId);
+      const call = result.data;
+
+      // Notify the other participant
+      const otherUserId = call.callerId === userId ? call.calleeId : call.callerId;
+      this.sendToUser(otherUserId, 'call:ended', { call });
+
+      return { event: 'call:end:ack', data: call };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to end call';
+      return { event: 'call:error', data: { message } };
+    }
+  }
+
+  // WebRTC signaling relay
+
+  @SubscribeMessage('call:offer')
+  handleCallOffer(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { callId: string; targetUserId: string; offer: RTCSessionDescriptionInit },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    this.sendToUser(data.targetUserId, 'call:offer', {
+      callId: data.callId,
+      fromUserId: userId,
+      offer: data.offer,
+    });
+  }
+
+  @SubscribeMessage('call:answer-sdp')
+  handleCallAnswerSdp(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { callId: string; targetUserId: string; answer: RTCSessionDescriptionInit },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    this.sendToUser(data.targetUserId, 'call:answer-sdp', {
+      callId: data.callId,
+      fromUserId: userId,
+      answer: data.answer,
+    });
+  }
+
+  @SubscribeMessage('call:ice-candidate')
+  handleIceCandidate(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { callId: string; targetUserId: string; candidate: RTCIceCandidateInit },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    this.sendToUser(data.targetUserId, 'call:ice-candidate', {
+      callId: data.callId,
+      fromUserId: userId,
+      candidate: data.candidate,
     });
   }
 

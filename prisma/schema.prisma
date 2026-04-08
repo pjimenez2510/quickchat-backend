@@ -42,8 +42,44 @@ model User {
   messages_sent        Message[]
   deleted_messages     DeletedMessage[]
   message_reactions    MessageReaction[]
+  calls_initiated      Call[]             @relation("CallCaller")
+  calls_received       Call[]             @relation("CallCallee")
 
   @@map("users")
+}
+
+enum CallType {
+  AUDIO
+  VIDEO
+}
+
+enum CallStatus {
+  RINGING
+  ANSWERED
+  REJECTED
+  MISSED
+  ENDED
+}
+
+model Call {
+  id               String     @id @default(uuid())
+  caller_id        String
+  callee_id        String
+  conversation_id  String
+  type             CallType
+  status           CallStatus @default(RINGING)
+  started_at       DateTime   @default(now())
+  answered_at      DateTime?
+  ended_at         DateTime?
+  duration_seconds Int        @default(0)
+
+  caller User @relation("CallCaller", fields: [caller_id], references: [id], onDelete: Cascade)
+  callee User @relation("CallCallee", fields: [callee_id], references: [id], onDelete: Cascade)
+
+  @@index([caller_id])
+  @@index([callee_id])
+  @@index([conversation_id])
+  @@map("calls")
 }
 
 model Contact {

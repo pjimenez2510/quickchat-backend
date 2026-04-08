@@ -52,6 +52,7 @@ export const AnyNull = runtime.AnyNull
 
 export const ModelName = {
   User: 'User',
+  Call: 'Call',
   Contact: 'Contact',
   BlockedUser: 'BlockedUser',
   Conversation: 'Conversation',
@@ -97,6 +98,22 @@ export const UserScalarFieldEnum = {
 } as const
 
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
+
+
+export const CallScalarFieldEnum = {
+  id: 'id',
+  caller_id: 'caller_id',
+  callee_id: 'callee_id',
+  conversation_id: 'conversation_id',
+  type: 'type',
+  status: 'status',
+  started_at: 'started_at',
+  answered_at: 'answered_at',
+  ended_at: 'ended_at',
+  duration_seconds: 'duration_seconds'
+} as const
+
+export type CallScalarFieldEnum = (typeof CallScalarFieldEnum)[keyof typeof CallScalarFieldEnum]
 
 
 export const ContactScalarFieldEnum = {
