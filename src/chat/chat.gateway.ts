@@ -238,6 +238,34 @@ export class ChatGateway
     }
   }
 
+  @SubscribeMessage('message:forward')
+  async handleForward(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: { messageId: string; targetConversationIds: string[] },
+  ) {
+    const userId = (client.data as { userId: string }).userId;
+    try {
+      const result = await this.messagesService.forwardMessage(
+        data.messageId,
+        userId,
+        data.targetConversationIds,
+      );
+
+      // Broadcast each forwarded message so recipients see it in real-time
+      for (const forwardedMessage of result.data) {
+        this.server.emit('message:new', {
+          conversationId: forwardedMessage.conversationId,
+          message: forwardedMessage,
+        });
+      }
+
+      return { event: 'message:forward:ack', data: result.data };
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to forward message';
+      return { event: 'message:error', data: { message } };
+    }
+  }
+
   @SubscribeMessage('typing:start')
   handleTypingStart(
     @ConnectedSocket() client: Socket,
