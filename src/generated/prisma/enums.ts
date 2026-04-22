@@ -18,6 +18,25 @@ export const ActivityVisibility = {
 export type ActivityVisibility = (typeof ActivityVisibility)[keyof typeof ActivityVisibility]
 
 
+export const CallType = {
+  AUDIO: 'AUDIO',
+  VIDEO: 'VIDEO'
+} as const
+
+export type CallType = (typeof CallType)[keyof typeof CallType]
+
+
+export const CallStatus = {
+  RINGING: 'RINGING',
+  ANSWERED: 'ANSWERED',
+  REJECTED: 'REJECTED',
+  MISSED: 'MISSED',
+  ENDED: 'ENDED'
+} as const
+
+export type CallStatus = (typeof CallStatus)[keyof typeof CallStatus]
+
+
 export const MessageType = {
   TEXT: 'TEXT',
   IMAGE: 'IMAGE',

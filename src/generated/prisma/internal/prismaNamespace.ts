@@ -385,6 +385,7 @@ type FieldRefInputType<Model, FieldType> = Model extends never ? never : FieldRe
 
 export const ModelName = {
   User: 'User',
+  Call: 'Call',
   Contact: 'Contact',
   BlockedUser: 'BlockedUser',
   Conversation: 'Conversation',
@@ -407,7 +408,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "contact" | "blockedUser" | "conversation" | "message" | "deletedMessage" | "messageReaction" | "refreshToken"
+    modelProps: "user" | "call" | "contact" | "blockedUser" | "conversation" | "message" | "deletedMessage" | "messageReaction" | "refreshToken"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -482,6 +483,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.UserCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.UserCountAggregateOutputType> | number
+        }
+      }
+    }
+    Call: {
+      payload: Prisma.$CallPayload<ExtArgs>
+      fields: Prisma.CallFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.CallFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.CallFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallPayload>
+        }
+        findFirst: {
+          args: Prisma.CallFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.CallFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallPayload>
+        }
+        findMany: {
+          args: Prisma.CallFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallPayload>[]
+        }
+        create: {
+          args: Prisma.CallCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallPayload>
+        }
+        createMany: {
+          args: Prisma.CallCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.CallCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallPayload>[]
+        }
+        delete: {
+          args: Prisma.CallDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallPayload>
+        }
+        update: {
+          args: Prisma.CallUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallPayload>
+        }
+        deleteMany: {
+          args: Prisma.CallDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.CallUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.CallUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallPayload>[]
+        }
+        upsert: {
+          args: Prisma.CallUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$CallPayload>
+        }
+        aggregate: {
+          args: Prisma.CallAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateCall>
+        }
+        groupBy: {
+          args: Prisma.CallGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CallGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.CallCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.CallCountAggregateOutputType> | number
         }
       }
     }
@@ -1064,6 +1139,22 @@ export const UserScalarFieldEnum = {
 export type UserScalarFieldEnum = (typeof UserScalarFieldEnum)[keyof typeof UserScalarFieldEnum]
 
 
+export const CallScalarFieldEnum = {
+  id: 'id',
+  caller_id: 'caller_id',
+  callee_id: 'callee_id',
+  conversation_id: 'conversation_id',
+  type: 'type',
+  status: 'status',
+  started_at: 'started_at',
+  answered_at: 'answered_at',
+  ended_at: 'ended_at',
+  duration_seconds: 'duration_seconds'
+} as const
+
+export type CallScalarFieldEnum = (typeof CallScalarFieldEnum)[keyof typeof CallScalarFieldEnum]
+
+
 export const ContactScalarFieldEnum = {
   user_id: 'user_id',
   contact_id: 'contact_id',
@@ -1229,16 +1320,30 @@ export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
 
 
 /**
- * Reference to a field of type 'MessageType'
+ * Reference to a field of type 'CallType'
  */
-export type EnumMessageTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MessageType'>
+export type EnumCallTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CallType'>
     
 
 
 /**
- * Reference to a field of type 'MessageType[]'
+ * Reference to a field of type 'CallType[]'
  */
-export type ListEnumMessageTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MessageType[]'>
+export type ListEnumCallTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CallType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'CallStatus'
+ */
+export type EnumCallStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CallStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'CallStatus[]'
+ */
+export type ListEnumCallStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'CallStatus[]'>
     
 
 
@@ -1253,6 +1358,34 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MessageType'
+ */
+export type EnumMessageTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MessageType'>
+    
+
+
+/**
+ * Reference to a field of type 'MessageType[]'
+ */
+export type ListEnumMessageTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MessageType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'Float'
+ */
+export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'Float[]'
+ */
+export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
 /**
@@ -1351,6 +1484,7 @@ export type PrismaClientOptions = ({
 }
 export type GlobalOmitConfig = {
   user?: Prisma.UserOmit
+  call?: Prisma.CallOmit
   contact?: Prisma.ContactOmit
   blockedUser?: Prisma.BlockedUserOmit
   conversation?: Prisma.ConversationOmit

@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import { ChatGateway } from './chat.gateway';
 import { UsersRepository } from '../users/users.repository';
 import { MessagesService } from '../messages/messages.service';
+import { CallsService } from '../calls/calls.service';
 
 describe('ChatGateway', () => {
   let gateway: ChatGateway;
@@ -37,6 +38,16 @@ describe('ChatGateway', () => {
             getConversationParticipants: jest.fn().mockResolvedValue({ otherUserId: 'user-2' }),
             markAsDelivered: jest.fn().mockResolvedValue(undefined),
             markAsRead: jest.fn().mockResolvedValue({ conversationId: 'conv-1', userId: 'user-1', readAt: new Date().toISOString() }),
+            forwardMessage: jest.fn().mockResolvedValue({ message: 'forwarded', data: [] }),
+          },
+        },
+        {
+          provide: CallsService,
+          useValue: {
+            initiateCall: jest.fn().mockResolvedValue({ message: 'initiated', data: { id: 'call-1', callerId: 'user-1', calleeId: 'user-2' } }),
+            answerCall: jest.fn().mockResolvedValue({ message: 'answered', data: { id: 'call-1', callerId: 'user-1' } }),
+            rejectCall: jest.fn().mockResolvedValue({ message: 'rejected', data: { id: 'call-1', callerId: 'user-1' } }),
+            endCall: jest.fn().mockResolvedValue({ message: 'ended', data: { id: 'call-1', callerId: 'user-1', calleeId: 'user-2' } }),
           },
         },
       ],
