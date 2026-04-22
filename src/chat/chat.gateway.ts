@@ -18,7 +18,9 @@ import { CallsService } from '../calls/calls.service.js';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env['CORS_ORIGINS']?.split(',') ?? ['http://localhost:3000'],
+    origin: (process.env['WS_CORS_ORIGINS'] ?? process.env['CORS_ORIGINS'])
+      ?.split(',')
+      .map((s) => s.trim()) ?? ['http://localhost:3000'],
     credentials: true,
   },
 })

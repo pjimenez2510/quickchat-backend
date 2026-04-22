@@ -11,7 +11,19 @@ async function bootstrap() {
 
   // Security
   app.use(helmet());
-  app.enableCors();
+  app.enableCors({
+    origin: process.env['CORS_ORIGINS']?.split(',').map((s) => s.trim()) ?? [
+      'http://localhost:3000',
+    ],
+    credentials: true,
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'Accept',
+      'ngrok-skip-browser-warning',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  });
 
   // Global pipes
   app.useGlobalPipes(
