@@ -6,6 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Response } from 'express';
+import { encryptTransport } from '../crypto/keys.js';
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
@@ -15,7 +16,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const status = exception.getStatus();
     const exceptionResponse = exception.getResponse();
 
-    response.status(status).json({
+    const body = {
       statusCode: status,
       message:
         typeof exceptionResponse === 'string'
@@ -28,6 +29,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
           : ((exceptionResponse as Record<string, unknown>).error as string) ||
             HttpStatus[status],
       timestamp: new Date().toISOString(),
-    });
+    };
+
+    response.status(status).json(encryptTransport(JSON.stringify(body)));
   }
 }
