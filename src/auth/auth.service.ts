@@ -6,10 +6,10 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
 import { PrismaService } from '../prisma/prisma.service.js';
 import { RegisterDto } from './dto/register.dto.js';
 import { LoginDto } from './dto/login.dto.js';
+import { encryptAtRest, decryptAtRest } from '../common/crypto/keys.js';
 
 interface TokenPayload {
   sub: string;
@@ -39,7 +39,6 @@ export interface UserResponse {
 @Injectable()
 export class AuthService {
   private readonly logger = new Logger(AuthService.name);
-  private readonly BCRYPT_ROUNDS = 12;
 
   constructor(
     private readonly prisma: PrismaService,
@@ -77,13 +76,13 @@ export class AuthService {
       throw new ConflictException('Username already taken');
     }
 
-    const hashedPassword = await bcrypt.hash(dto.password, this.BCRYPT_ROUNDS);
+    const encryptedPassword = encryptAtRest(dto.password);
 
     const user = await this.prisma.user.create({
       data: {
         email: dto.email ?? null,
         phone: dto.phone ?? null,
-        password: hashedPassword,
+        password: encryptedPassword,
         username: dto.username,
         display_name: dto.displayName,
       },
@@ -120,8 +119,8 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
-    const isPasswordValid = await bcrypt.compare(dto.password, user.password);
-    if (!isPasswordValid) {
+    const storedPassword = decryptAtRest(user.password);
+    if (storedPassword !== dto.password) {
       this.logger.warn(`Login failed: invalid password for ${user.username}`);
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -145,8 +144,6 @@ export class AuthService {
   }
 
   async refresh(refreshToken: string) {
-    const tokenHash = await bcrypt.hash(refreshToken, this.BCRYPT_ROUNDS);
-
     const storedTokens = await this.prisma.refreshToken.findMany({
       where: {
         user_id: { not: undefined },
@@ -157,8 +154,8 @@ export class AuthService {
 
     let matchedToken: (typeof storedTokens)[number] | null = null;
     for (const stored of storedTokens) {
-      const isMatch = await bcrypt.compare(refreshToken, stored.token_hash);
-      if (isMatch) {
+      const decrypted = decryptAtRest(stored.token_hash);
+      if (decrypted === refreshToken) {
         matchedToken = stored;
         break;
       }
@@ -255,7 +252,7 @@ export class AuthService {
     userId: string,
     refreshToken: string,
   ): Promise<void> {
-    const tokenHash = await bcrypt.hash(refreshToken, this.BCRYPT_ROUNDS);
+    const encryptedToken = encryptAtRest(refreshToken);
     const expiresIn = this.configService.get<string>('JWT_REFRESH_EXPIRES_IN', '7d');
     const expiresAt = new Date();
     const days = parseInt(expiresIn.replace('d', ''), 10) || 7;
@@ -264,7 +261,7 @@ export class AuthService {
     await this.prisma.refreshToken.create({
       data: {
         user_id: userId,
-        token_hash: tokenHash,
+        token_hash: encryptedToken,
         expires_at: expiresAt,
       },
     });
