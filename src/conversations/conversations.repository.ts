@@ -1,5 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { decryptAtRest } from '../common/crypto/keys.js';
+
+interface ConvWithLastMessage {
+  last_message?: { content: string | null } | null;
+}
+
+function decryptLastMessage<T extends ConvWithLastMessage>(conv: T): T {
+  if (conv.last_message) {
+    conv.last_message.content = decryptAtRest(conv.last_message.content);
+  }
+  return conv;
+}
 
 @Injectable()
 export class ConversationsRepository {
@@ -16,8 +28,8 @@ export class ConversationsRepository {
     });
   }
 
-  findById(id: string) {
-    return this.prisma.conversation.findUnique({
+  async findById(id: string) {
+    const conv = await this.prisma.conversation.findUnique({
       where: { id },
       include: {
         participant1: {
@@ -31,10 +43,11 @@ export class ConversationsRepository {
         },
       },
     });
+    return conv ? decryptLastMessage(conv) : null;
   }
 
-  findAllByUser(userId: string) {
-    return this.prisma.conversation.findMany({
+  async findAllByUser(userId: string) {
+    const convs = await this.prisma.conversation.findMany({
       where: {
         OR: [
           { participant1_id: userId },
@@ -55,6 +68,8 @@ export class ConversationsRepository {
       },
       orderBy: { updated_at: 'desc' },
     });
+    for (const conv of convs) decryptLastMessage(conv);
+    return convs;
   }
 
   create(participant1Id: string, participant2Id: string) {
@@ -123,8 +138,8 @@ export class ConversationsRepository {
     });
   }
 
-  findArchivedByUser(userId: string) {
-    return this.prisma.conversation.findMany({
+  async findArchivedByUser(userId: string) {
+    const convs = await this.prisma.conversation.findMany({
       where: {
         OR: [
           { participant1_id: userId },
@@ -145,5 +160,7 @@ export class ConversationsRepository {
       },
       orderBy: { updated_at: 'desc' },
     });
+    for (const conv of convs) decryptLastMessage(conv);
+    return convs;
   }
 }

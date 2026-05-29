@@ -22,6 +22,9 @@ export class TransformResponseInterceptor<T>
     context: ExecutionContext,
     next: CallHandler,
   ): Observable<ApiResponse<T>> {
+    if (context.getType() !== 'http') {
+      return next.handle();
+    }
     return next.handle().pipe(
       map((data: { message?: string; data?: T } | T) => ({
         statusCode: context.switchToHttp().getResponse<{ statusCode: number }>()
