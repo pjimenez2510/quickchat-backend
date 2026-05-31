@@ -5,6 +5,7 @@ export enum ActivityVisibilityDto {
   ALL = 'ALL',
   CONTACTS_ONLY = 'CONTACTS_ONLY',
   SELECTED_CONTACTS = 'SELECTED_CONTACTS',
+  NONE = 'NONE',
 }
 
 export class UpdateProfileDto {
