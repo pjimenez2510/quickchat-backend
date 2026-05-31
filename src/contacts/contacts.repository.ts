@@ -11,6 +11,14 @@ export class ContactsRepository {
     });
   }
 
+  async findContactIds(userId: string): Promise<string[]> {
+    const rows = await this.prisma.contact.findMany({
+      where: { user_id: userId },
+      select: { contact_id: true },
+    });
+    return rows.map((r) => r.contact_id);
+  }
+
   findAllByUser(userId: string) {
     return this.prisma.contact.findMany({
       where: { user_id: userId },
