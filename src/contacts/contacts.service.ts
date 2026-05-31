@@ -1,7 +1,6 @@
 import {
   Injectable,
   ConflictException,
-  NotFoundException,
 } from '@nestjs/common';
 import { ContactsRepository } from './contacts.repository.js';
 import { BlockedUsersRepository } from '../blocked-users/blocked-users.repository.js';
@@ -57,11 +56,11 @@ export class ContactsService {
   }
 
   async removeContact(userId: string, contactId: string) {
-    const existing = await this.contactsRepository.findContact(userId, contactId);
-    if (!existing) {
-      throw new NotFoundException('Contact not found');
-    }
-
+    // Idempotent delete: the caller's intent is "this user should not be in my
+    // contacts". If the relationship doesn't exist (e.g. they were never a
+    // contact, or were already removed) the outcome is the same — return OK
+    // instead of 404 so UIs that surface a "Remove contact" action without
+    // first checking the contact list don't error.
     await this.contactsRepository.removeContact(userId, contactId);
 
     return {

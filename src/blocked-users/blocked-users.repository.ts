@@ -36,13 +36,10 @@ export class BlockedUsersRepository {
   }
 
   unblock(userId: string, blockedUserId: string) {
-    return this.prisma.blockedUser.delete({
-      where: {
-        user_id_blocked_user_id: {
-          user_id: userId,
-          blocked_user_id: blockedUserId,
-        },
-      },
+    // deleteMany is safe when the row doesn't exist (returns count: 0 instead
+    // of throwing P2025). Keeps the service's idempotent contract.
+    return this.prisma.blockedUser.deleteMany({
+      where: { user_id: userId, blocked_user_id: blockedUserId },
     });
   }
 
