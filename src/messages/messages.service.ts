@@ -286,6 +286,9 @@ export class MessagesService {
         : conversation.participant1_id;
 
     await this.messagesRepository.markConversationAsRead(conversationId, otherUserId);
+    // Si el usuario abre la conversación, deja de estar marcada como "no leída"
+    // (RF-21: el flag manual `marked_unread_by` se limpia al re-entrar).
+    await this.conversationsRepository.clearUnread(conversationId, userId);
 
     return {
       conversationId,

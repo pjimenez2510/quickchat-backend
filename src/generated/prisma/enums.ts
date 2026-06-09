@@ -12,7 +12,8 @@
 export const ActivityVisibility = {
   ALL: 'ALL',
   CONTACTS_ONLY: 'CONTACTS_ONLY',
-  SELECTED_CONTACTS: 'SELECTED_CONTACTS'
+  SELECTED_CONTACTS: 'SELECTED_CONTACTS',
+  NONE: 'NONE'
 } as const
 
 export type ActivityVisibility = (typeof ActivityVisibility)[keyof typeof ActivityVisibility]

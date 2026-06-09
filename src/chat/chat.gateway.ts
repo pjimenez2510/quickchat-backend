@@ -15,6 +15,7 @@ import { Server, Socket } from 'socket.io';
 import { UsersRepository } from '../users/users.repository.js';
 import { MessagesService } from '../messages/messages.service.js';
 import { CallsService } from '../calls/calls.service.js';
+import { ContactsRepository } from '../contacts/contacts.repository.js';
 import { encryptTransport } from '../common/crypto/keys.js';
 import { WsCryptoInterceptor } from '../common/interceptors/ws-crypto.interceptor.js';
 
@@ -42,7 +43,42 @@ export class ChatGateway
     private readonly usersRepository: UsersRepository,
     private readonly messagesService: MessagesService,
     private readonly callsService: CallsService,
+    private readonly contactsRepository: ContactsRepository,
   ) {}
+
+  /**
+   * Emite `user:online` respetando RF-05: visibilidad del estado de actividad.
+   * - ALL: broadcast a todos.
+   * - CONTACTS_ONLY / SELECTED_CONTACTS: solo a los contactos del usuario.
+   * - NONE: no se emite.
+   */
+  private async emitPresence(userId: string, isOnline: boolean): Promise<void> {
+    const user = await this.usersRepository.findById(userId);
+    if (!user) return;
+
+    const payload = {
+      userId,
+      isOnline,
+      lastSeenAt: new Date().toISOString(),
+    };
+
+    switch (user.activity_visibility) {
+      case 'NONE':
+        return;
+      case 'CONTACTS_ONLY':
+      case 'SELECTED_CONTACTS': {
+        const contactIds = await this.contactsRepository.findContactIds(userId);
+        for (const cid of contactIds) {
+          this.emitToUser(cid, 'user:online', payload);
+        }
+        return;
+      }
+      case 'ALL':
+      default:
+        this.emitAll('user:online', payload);
+        return;
+    }
+  }
 
   /**
    * Cifra el payload antes de emitir. Todos los broadcasts pasan por aquí
@@ -91,11 +127,7 @@ export class ChatGateway
 
       if (this.connectedUsers.get(userId)!.size === 1) {
         await this.usersRepository.setOnlineStatus(userId, true);
-        this.emitAll('user:online', {
-          userId,
-          isOnline: true,
-          lastSeenAt: new Date().toISOString(),
-        });
+        await this.emitPresence(userId, true);
       }
 
       this.logger.log(`Client connected: ${client.id} (user: ${userId})`);
@@ -115,11 +147,7 @@ export class ChatGateway
       if (userSockets.size === 0) {
         this.connectedUsers.delete(userId);
         await this.usersRepository.setOnlineStatus(userId, false);
-        this.emitAll('user:online', {
-          userId,
-          isOnline: false,
-          lastSeenAt: new Date().toISOString(),
-        });
+        await this.emitPresence(userId, false);
       }
     }
 

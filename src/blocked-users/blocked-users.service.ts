@@ -1,7 +1,6 @@
 import {
   Injectable,
   ConflictException,
-  NotFoundException,
 } from '@nestjs/common';
 import { BlockedUsersRepository } from './blocked-users.repository.js';
 
@@ -55,14 +54,9 @@ export class BlockedUsersService {
   }
 
   async unblockUser(userId: string, blockedUserId: string) {
-    const isBlocked = await this.blockedUsersRepository.isBlocked(
-      userId,
-      blockedUserId,
-    );
-    if (!isBlocked) {
-      throw new NotFoundException('User is not blocked');
-    }
-
+    // Idempotent unblock: the caller's intent is "this user should not be blocked
+    // by me". If the block relation doesn't exist, the outcome is the same —
+    // return OK instead of 404.
     await this.blockedUsersRepository.unblock(userId, blockedUserId);
 
     return {

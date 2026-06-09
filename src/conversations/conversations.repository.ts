@@ -33,10 +33,10 @@ export class ConversationsRepository {
       where: { id },
       include: {
         participant1: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         participant2: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         last_message: {
           select: { id: true, content: true, type: true, sender_id: true, created_at: true },
@@ -57,10 +57,10 @@ export class ConversationsRepository {
       },
       include: {
         participant1: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         participant2: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         last_message: {
           select: { id: true, content: true, type: true, sender_id: true, created_at: true },
@@ -80,10 +80,10 @@ export class ConversationsRepository {
       },
       include: {
         participant1: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         participant2: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
       },
     });
@@ -149,10 +149,10 @@ export class ConversationsRepository {
       },
       include: {
         participant1: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         participant2: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         last_message: {
           select: { id: true, content: true, type: true, sender_id: true, created_at: true },
