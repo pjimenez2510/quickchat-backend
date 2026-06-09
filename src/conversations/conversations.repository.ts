@@ -1,5 +1,17 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { decryptAtRest } from '../common/crypto/keys.js';
+
+interface ConvWithLastMessage {
+  last_message?: { content: string | null } | null;
+}
+
+function decryptLastMessage<T extends ConvWithLastMessage>(conv: T): T {
+  if (conv.last_message) {
+    conv.last_message.content = decryptAtRest(conv.last_message.content);
+  }
+  return conv;
+}
 
 @Injectable()
 export class ConversationsRepository {
@@ -16,25 +28,26 @@ export class ConversationsRepository {
     });
   }
 
-  findById(id: string) {
-    return this.prisma.conversation.findUnique({
+  async findById(id: string) {
+    const conv = await this.prisma.conversation.findUnique({
       where: { id },
       include: {
         participant1: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         participant2: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         last_message: {
           select: { id: true, content: true, type: true, sender_id: true, created_at: true },
         },
       },
     });
+    return conv ? decryptLastMessage(conv) : null;
   }
 
-  findAllByUser(userId: string) {
-    return this.prisma.conversation.findMany({
+  async findAllByUser(userId: string) {
+    const convs = await this.prisma.conversation.findMany({
       where: {
         OR: [
           { participant1_id: userId },
@@ -44,10 +57,10 @@ export class ConversationsRepository {
       },
       include: {
         participant1: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         participant2: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         last_message: {
           select: { id: true, content: true, type: true, sender_id: true, created_at: true },
@@ -55,6 +68,8 @@ export class ConversationsRepository {
       },
       orderBy: { updated_at: 'desc' },
     });
+    for (const conv of convs) decryptLastMessage(conv);
+    return convs;
   }
 
   create(participant1Id: string, participant2Id: string) {
@@ -65,10 +80,10 @@ export class ConversationsRepository {
       },
       include: {
         participant1: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         participant2: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
       },
     });
@@ -123,8 +138,8 @@ export class ConversationsRepository {
     });
   }
 
-  findArchivedByUser(userId: string) {
-    return this.prisma.conversation.findMany({
+  async findArchivedByUser(userId: string) {
+    const convs = await this.prisma.conversation.findMany({
       where: {
         OR: [
           { participant1_id: userId },
@@ -134,10 +149,10 @@ export class ConversationsRepository {
       },
       include: {
         participant1: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         participant2: {
-          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true },
+          select: { id: true, username: true, display_name: true, avatar_url: true, is_online: true, last_seen_at: true, custom_status: true, custom_status_emoji: true, activity_visibility: true },
         },
         last_message: {
           select: { id: true, content: true, type: true, sender_id: true, created_at: true },
@@ -145,5 +160,7 @@ export class ConversationsRepository {
       },
       orderBy: { updated_at: 'desc' },
     });
+    for (const conv of convs) decryptLastMessage(conv);
+    return convs;
   }
 }

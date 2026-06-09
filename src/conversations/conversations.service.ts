@@ -1,6 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { ConversationsRepository } from './conversations.repository.js';
 import { BlockedUsersRepository } from '../blocked-users/blocked-users.repository.js';
+import { ContactsRepository } from '../contacts/contacts.repository.js';
 
 export interface ConversationResponse {
   id: string;
@@ -11,6 +12,8 @@ export interface ConversationResponse {
     avatarUrl: string | null;
     isOnline: boolean;
     lastSeenAt: Date | null;
+    customStatus: string | null;
+    customStatusEmoji: string | null;
   };
   lastMessage: {
     id: string;
@@ -19,7 +22,39 @@ export interface ConversationResponse {
     senderId: string;
     createdAt: Date;
   } | null;
+  isArchived: boolean;
+  isUnread: boolean;
   updatedAt: Date;
+}
+
+interface RawConversation {
+  id: string;
+  participant1_id: string;
+  participant2_id: string;
+  archived_by: string[];
+  marked_unread_by: string[];
+  participant1: RawParticipant;
+  participant2: RawParticipant;
+  last_message?: {
+    id: string;
+    content: string | null;
+    type: string;
+    sender_id: string;
+    created_at: Date;
+  } | null;
+  updated_at: Date;
+}
+
+interface RawParticipant {
+  id: string;
+  username: string;
+  display_name: string;
+  avatar_url: string | null;
+  is_online: boolean;
+  last_seen_at: Date | null;
+  custom_status: string | null;
+  custom_status_emoji: string | null;
+  activity_visibility: string;
 }
 
 @Injectable()
@@ -27,14 +62,21 @@ export class ConversationsService {
   constructor(
     private readonly conversationsRepository: ConversationsRepository,
     private readonly blockedUsersRepository: BlockedUsersRepository,
+    private readonly contactsRepository: ContactsRepository,
   ) {}
 
   async getConversations(userId: string) {
-    const conversations = await this.conversationsRepository.findAllByUser(userId);
+    const [conversations, contactIds] = await Promise.all([
+      this.conversationsRepository.findAllByUser(userId),
+      this.contactsRepository.findContactIds(userId),
+    ]);
+    const contactSet = new Set(contactIds);
 
     return {
       message: 'Conversations retrieved successfully',
-      data: conversations.map((c) => this.mapConversation(c, userId)),
+      data: conversations.map((c) =>
+        this.mapConversation(c as RawConversation, userId, contactSet),
+      ),
     };
   }
 
@@ -55,9 +97,10 @@ export class ConversationsService {
       throw new NotFoundException('Conversation not found');
     }
 
+    const contactSet = await this.getContactSet(userId);
     return {
       message: 'Conversation retrieved successfully',
-      data: this.mapConversation(full, userId),
+      data: this.mapConversation(full as RawConversation, userId, contactSet),
     };
   }
 
@@ -72,17 +115,24 @@ export class ConversationsService {
       throw new NotFoundException('Conversation not found');
     }
 
+    const contactSet = await this.getContactSet(userId);
     return {
       message: 'Conversation retrieved successfully',
-      data: this.mapConversation(conversation, userId),
+      data: this.mapConversation(conversation as RawConversation, userId, contactSet),
     };
   }
 
   async getArchivedConversations(userId: string) {
-    const conversations = await this.conversationsRepository.findArchivedByUser(userId);
+    const [conversations, contactIds] = await Promise.all([
+      this.conversationsRepository.findArchivedByUser(userId),
+      this.contactsRepository.findContactIds(userId),
+    ]);
+    const contactSet = new Set(contactIds);
     return {
       message: 'Archived conversations retrieved',
-      data: conversations.map((c) => this.mapConversation(c, userId)),
+      data: conversations.map((c) =>
+        this.mapConversation(c as RawConversation, userId, contactSet),
+      ),
     };
   }
 
@@ -101,20 +151,24 @@ export class ConversationsService {
     return { message: 'Conversation marked as unread', data: null };
   }
 
+  private async getContactSet(userId: string): Promise<Set<string>> {
+    const ids = await this.contactsRepository.findContactIds(userId);
+    return new Set(ids);
+  }
+
   private mapConversation(
-    conversation: {
-      id: string;
-      participant1_id: string;
-      participant1: { id: string; username: string; display_name: string; avatar_url: string | null; is_online: boolean; last_seen_at: Date | null };
-      participant2: { id: string; username: string; display_name: string; avatar_url: string | null; is_online: boolean; last_seen_at: Date | null };
-      last_message?: { id: string; content: string | null; type: string; sender_id: string; created_at: Date } | null;
-      updated_at: Date;
-    },
+    conversation: RawConversation,
     currentUserId: string,
+    contactSet: Set<string>,
   ): ConversationResponse {
     const otherParticipant = conversation.participant1_id === currentUserId
       ? conversation.participant2
       : conversation.participant1;
+
+    const canSeeActivity = this.canSeeActivity(
+      otherParticipant.activity_visibility,
+      contactSet.has(otherParticipant.id),
+    );
 
     return {
       id: conversation.id,
@@ -123,8 +177,10 @@ export class ConversationsService {
         username: otherParticipant.username,
         displayName: otherParticipant.display_name,
         avatarUrl: otherParticipant.avatar_url,
-        isOnline: otherParticipant.is_online,
-        lastSeenAt: otherParticipant.last_seen_at,
+        isOnline: canSeeActivity ? otherParticipant.is_online : false,
+        lastSeenAt: canSeeActivity ? otherParticipant.last_seen_at : null,
+        customStatus: otherParticipant.custom_status,
+        customStatusEmoji: otherParticipant.custom_status_emoji,
       },
       lastMessage: conversation.last_message
         ? {
@@ -135,7 +191,23 @@ export class ConversationsService {
             createdAt: conversation.last_message.created_at,
           }
         : null,
+      isArchived: conversation.archived_by.includes(currentUserId),
+      isUnread: conversation.marked_unread_by.includes(currentUserId),
       updatedAt: conversation.updated_at,
     };
+  }
+
+  private canSeeActivity(visibility: string, isContact: boolean): boolean {
+    switch (visibility) {
+      case 'ALL':
+        return true;
+      case 'CONTACTS_ONLY':
+      case 'SELECTED_CONTACTS':
+        return isContact;
+      case 'NONE':
+        return false;
+      default:
+        return false;
+    }
   }
 }

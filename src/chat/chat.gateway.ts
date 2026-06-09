@@ -8,13 +8,16 @@ import {
   MessageBody,
   ConnectedSocket,
 } from '@nestjs/websockets';
-import { Logger } from '@nestjs/common';
+import { Logger, UseInterceptors } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { Server, Socket } from 'socket.io';
 import { UsersRepository } from '../users/users.repository.js';
 import { MessagesService } from '../messages/messages.service.js';
 import { CallsService } from '../calls/calls.service.js';
+import { ContactsRepository } from '../contacts/contacts.repository.js';
+import { encryptTransport } from '../common/crypto/keys.js';
+import { WsCryptoInterceptor } from '../common/interceptors/ws-crypto.interceptor.js';
 
 @WebSocketGateway({
   cors: {
@@ -24,6 +27,7 @@ import { CallsService } from '../calls/calls.service.js';
     credentials: true,
   },
 })
+@UseInterceptors(WsCryptoInterceptor)
 export class ChatGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
 {
@@ -39,18 +43,61 @@ export class ChatGateway
     private readonly usersRepository: UsersRepository,
     private readonly messagesService: MessagesService,
     private readonly callsService: CallsService,
+    private readonly contactsRepository: ContactsRepository,
   ) {}
 
-  private sendToUser(userId: string, event: string, payload: unknown) {
+  /**
+   * Emite `user:online` respetando RF-05: visibilidad del estado de actividad.
+   * - ALL: broadcast a todos.
+   * - CONTACTS_ONLY / SELECTED_CONTACTS: solo a los contactos del usuario.
+   * - NONE: no se emite.
+   */
+  private async emitPresence(userId: string, isOnline: boolean): Promise<void> {
+    const user = await this.usersRepository.findById(userId);
+    if (!user) return;
+
+    const payload = {
+      userId,
+      isOnline,
+      lastSeenAt: new Date().toISOString(),
+    };
+
+    switch (user.activity_visibility) {
+      case 'NONE':
+        return;
+      case 'CONTACTS_ONLY':
+      case 'SELECTED_CONTACTS': {
+        const contactIds = await this.contactsRepository.findContactIds(userId);
+        for (const cid of contactIds) {
+          this.emitToUser(cid, 'user:online', payload);
+        }
+        return;
+      }
+      case 'ALL':
+      default:
+        this.emitAll('user:online', payload);
+        return;
+    }
+  }
+
+  /**
+   * Cifra el payload antes de emitir. Todos los broadcasts pasan por aquí
+   * para que ningún dato salga en claro por el WebSocket.
+   */
+  private emitAll(event: string, payload: unknown): void {
+    this.server.emit(event, encryptTransport(JSON.stringify(payload ?? null)));
+  }
+
+  private emitToUser(userId: string, event: string, payload: unknown): void {
     const sockets = this.connectedUsers.get(userId);
     if (!sockets) return;
+    const cipher = encryptTransport(JSON.stringify(payload ?? null));
     for (const socketId of sockets) {
-      this.server.to(socketId).emit(event, payload);
+      this.server.to(socketId).emit(event, cipher);
     }
   }
 
   async afterInit() {
-    // Reset all users to offline on server start (cleanup stale status)
     await this.usersRepository.resetAllOnlineStatus();
     this.logger.log('WebSocket Gateway initialized — all users reset to offline');
   }
@@ -73,20 +120,14 @@ export class ChatGateway
       const userId = payload.sub;
       client.data = { userId };
 
-      // Track connected sockets per user
       if (!this.connectedUsers.has(userId)) {
         this.connectedUsers.set(userId, new Set());
       }
       this.connectedUsers.get(userId)!.add(client.id);
 
-      // Set online if first connection
       if (this.connectedUsers.get(userId)!.size === 1) {
         await this.usersRepository.setOnlineStatus(userId, true);
-        this.server.emit('user:online', {
-          userId,
-          isOnline: true,
-          lastSeenAt: new Date().toISOString(),
-        });
+        await this.emitPresence(userId, true);
       }
 
       this.logger.log(`Client connected: ${client.id} (user: ${userId})`);
@@ -103,15 +144,10 @@ export class ChatGateway
     if (userSockets) {
       userSockets.delete(client.id);
 
-      // Set offline if no more connections
       if (userSockets.size === 0) {
         this.connectedUsers.delete(userId);
         await this.usersRepository.setOnlineStatus(userId, false);
-        this.server.emit('user:online', {
-          userId,
-          isOnline: false,
-          lastSeenAt: new Date().toISOString(),
-        });
+        await this.emitPresence(userId, false);
       }
     }
 
@@ -150,17 +186,18 @@ export class ChatGateway
         replyToId: data.replyToId,
       });
 
-      // Emit to all clients
-      this.server.emit('message:new', {
+      this.emitAll('message:new', {
         conversationId: data.conversationId,
         message: result.data,
       });
 
-      // Auto-deliver if recipient is online
-      const conversation = await this.messagesService.getConversationParticipants(data.conversationId, userId);
+      const conversation = await this.messagesService.getConversationParticipants(
+        data.conversationId,
+        userId,
+      );
       if (conversation && this.isUserOnline(conversation.otherUserId)) {
         await this.messagesService.markAsDelivered(result.data.id);
-        this.server.emit('message:delivered', {
+        this.emitAll('message:delivered', {
           messageId: result.data.id,
           conversationId: data.conversationId,
         });
@@ -182,7 +219,7 @@ export class ChatGateway
 
     const result = await this.messagesService.markAsRead(data.conversationId, userId);
     if (result) {
-      this.server.emit('message:read', {
+      this.emitAll('message:read', {
         conversationId: data.conversationId,
         userId,
         readAt: result.readAt,
@@ -197,8 +234,12 @@ export class ChatGateway
   ) {
     const userId = (client.data as { userId: string }).userId;
     try {
-      const result = await this.messagesService.editMessage(data.messageId, userId, data.content);
-      this.server.emit('message:updated', {
+      const result = await this.messagesService.editMessage(
+        data.messageId,
+        userId,
+        data.content,
+      );
+      this.emitAll('message:updated', {
         messageId: data.messageId,
         content: data.content,
         isEdited: true,
@@ -219,7 +260,7 @@ export class ChatGateway
     try {
       if (data.deleteForAll) {
         const result = await this.messagesService.deleteForAll(data.messageId, userId);
-        this.server.emit('message:deleted', {
+        this.emitAll('message:deleted', {
           messageId: data.messageId,
           conversationId: result.data?.conversationId,
           deletedForAll: true,
@@ -242,7 +283,7 @@ export class ChatGateway
     const userId = (client.data as { userId: string }).userId;
     try {
       const result = await this.messagesService.addReaction(data.messageId, userId, data.emoji);
-      this.server.emit('message:reaction', result.data);
+      this.emitAll('message:reaction', result.data);
       return { event: 'message:reaction:ack', data: result.data };
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to react';
@@ -263,9 +304,8 @@ export class ChatGateway
         data.targetConversationIds,
       );
 
-      // Broadcast each forwarded message so recipients see it in real-time
       for (const forwardedMessage of result.data) {
-        this.server.emit('message:new', {
+        this.emitAll('message:new', {
           conversationId: forwardedMessage.conversationId,
           message: forwardedMessage,
         });
@@ -284,7 +324,7 @@ export class ChatGateway
     @MessageBody() data: { conversationId: string },
   ) {
     const userId = (client.data as { userId: string }).userId;
-    this.server.emit('user:typing', {
+    this.emitAll('user:typing', {
       conversationId: data.conversationId,
       userId,
       isTyping: true,
@@ -297,7 +337,7 @@ export class ChatGateway
     @MessageBody() data: { conversationId: string },
   ) {
     const userId = (client.data as { userId: string }).userId;
-    this.server.emit('user:typing', {
+    this.emitAll('user:typing', {
       conversationId: data.conversationId,
       userId,
       isTyping: false,
@@ -316,11 +356,9 @@ export class ChatGateway
       const result = await this.callsService.initiateCall(userId, data.conversationId, data.type);
       const call = result.data;
 
-      // Notify callee about incoming call
       if (this.isUserOnline(call.calleeId)) {
-        this.sendToUser(call.calleeId, 'call:incoming', { call });
+        this.emitToUser(call.calleeId, 'call:incoming', { call });
       } else {
-        // Callee is offline - auto-end as missed
         await this.callsService.endCall(call.id, userId);
         return { event: 'call:unavailable', data: { message: 'User is offline' } };
       }
@@ -341,8 +379,7 @@ export class ChatGateway
     try {
       const result = await this.callsService.answerCall(data.callId, userId);
       const call = result.data;
-      // Notify caller that callee accepted
-      this.sendToUser(call.callerId, 'call:accepted', { call });
+      this.emitToUser(call.callerId, 'call:accepted', { call });
       return { event: 'call:answer:ack', data: call };
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to answer call';
@@ -359,7 +396,7 @@ export class ChatGateway
     try {
       const result = await this.callsService.rejectCall(data.callId, userId);
       const call = result.data;
-      this.sendToUser(call.callerId, 'call:rejected', { call });
+      this.emitToUser(call.callerId, 'call:rejected', { call });
       return { event: 'call:reject:ack', data: call };
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to reject call';
@@ -377,9 +414,8 @@ export class ChatGateway
       const result = await this.callsService.endCall(data.callId, userId);
       const call = result.data;
 
-      // Notify the other participant
       const otherUserId = call.callerId === userId ? call.calleeId : call.callerId;
-      this.sendToUser(otherUserId, 'call:ended', { call });
+      this.emitToUser(otherUserId, 'call:ended', { call });
 
       return { event: 'call:end:ack', data: call };
     } catch (error) {
@@ -388,15 +424,13 @@ export class ChatGateway
     }
   }
 
-  // WebRTC signaling relay
-
   @SubscribeMessage('call:offer')
   handleCallOffer(
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { callId: string; targetUserId: string; offer: RTCSessionDescriptionInit },
   ) {
     const userId = (client.data as { userId: string }).userId;
-    this.sendToUser(data.targetUserId, 'call:offer', {
+    this.emitToUser(data.targetUserId, 'call:offer', {
       callId: data.callId,
       fromUserId: userId,
       offer: data.offer,
@@ -409,7 +443,7 @@ export class ChatGateway
     @MessageBody() data: { callId: string; targetUserId: string; answer: RTCSessionDescriptionInit },
   ) {
     const userId = (client.data as { userId: string }).userId;
-    this.sendToUser(data.targetUserId, 'call:answer-sdp', {
+    this.emitToUser(data.targetUserId, 'call:answer-sdp', {
       callId: data.callId,
       fromUserId: userId,
       answer: data.answer,
@@ -422,7 +456,7 @@ export class ChatGateway
     @MessageBody() data: { callId: string; targetUserId: string; candidate: RTCIceCandidateInit },
   ) {
     const userId = (client.data as { userId: string }).userId;
-    this.sendToUser(data.targetUserId, 'call:ice-candidate', {
+    this.emitToUser(data.targetUserId, 'call:ice-candidate', {
       callId: data.callId,
       fromUserId: userId,
       candidate: data.candidate,

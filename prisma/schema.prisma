@@ -12,6 +12,7 @@ enum ActivityVisibility {
   ALL
   CONTACTS_ONLY
   SELECTED_CONTACTS
+  NONE
 }
 
 model User {

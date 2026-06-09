@@ -1,98 +1,118 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# QuickChat — Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API del servicio de mensajería en tiempo real **QuickChat** (estilo Messenger,
+1:1). Este repositorio es el **backend** (NestJS + Socket.io + PostgreSQL). El
+cliente vive en
+[`quickchat-frontend`](https://github.com/pjimenez2510/quickchat-frontend).
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Stack
 
-## Description
+- **NestJS 11** + TypeScript (strict), arquitectura modular.
+- **PostgreSQL** + **Prisma 7** (cliente en `src/generated`).
+- **Socket.io 4** — gateway WebSocket (mensajería + señalización WebRTC).
+- **Passport + JWT** (access + refresh tokens).
+- **AWS S3** (multimedia) · **Giphy** (GIFs) · **Redis** (colas/escala).
+- **Swagger/OpenAPI**, **Helmet**, `class-validator`/`class-transformer`.
+- Cifrado de aplicación propio (**QCipher**) en transporte y at-rest.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+## Requisitos
 
-## Project setup
+- Node.js ≥ 20
+- PostgreSQL y Redis accesibles (o vía Docker Compose)
+
+## Puesta en marcha
 
 ```bash
-$ npm install
+# 1. Dependencias
+npm install
+
+# 2. Entorno
+cp .env.example .env          # rellena los valores (ver tabla abajo)
+
+# 3. Base de datos (Prisma)
+npx prisma migrate dev        # aplica migraciones
+npx prisma generate           # genera el cliente (en src/generated)
+
+# 4. Desarrollo (http://localhost:3002 por defecto)
+npm run start:dev
 ```
 
-## Compile and run the project
+Producción:
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+npm run build
+npm run start:prod
 ```
 
-## Run tests
+API documentada (Swagger) en **`/api/docs`** (deshabilitado en producción).
 
-```bash
-# unit tests
-$ npm run test
+## Variables de entorno
 
-# e2e tests
-$ npm run test:e2e
+Ver [`.env.example`](.env.example). Resumen por grupos:
 
-# test coverage
-$ npm run test:cov
-```
+| Grupo | Variables |
+|-------|-----------|
+| Servidor | `NODE_ENV`, `PORT`, `API_PREFIX`, `CORS_ORIGINS` |
+| Base de datos | `DATABASE_URL`, `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD`, `DB_NAME` |
+| Redis | `REDIS_URL`, `REDIS_HOST`, `REDIS_PORT` |
+| JWT | `JWT_SECRET`, `JWT_ACCESS_EXPIRES_IN`, `JWT_REFRESH_SECRET`, `JWT_REFRESH_EXPIRES_IN` |
+| AWS S3 | `AWS_S3_BUCKET`, `AWS_S3_REGION`, `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY` |
+| Integraciones | `GIPHY_API_KEY`, `SENTRY_DSN` |
+| WebSocket | `WS_PORT`, `WS_CORS_ORIGINS` |
+| Límites | `MAX_FILE_SIZE_MB`, `MESSAGE_EDIT_TIME_LIMIT_MIN`, `MAX_PINNED_MESSAGES_PER_CONVERSATION` |
+| **Cifrado** | `CRYPTO_TRANSPORT_KEY` (= `NEXT_PUBLIC_CRYPTO_TRANSPORT_KEY` del frontend), `CRYPTO_AT_REST_KEY` |
 
-## Deployment
+## Scripts
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+| Script | Acción |
+|--------|--------|
+| `npm run start:dev` | Servidor en watch mode |
+| `npm run build` | Compilación (`nest build`) |
+| `npm run start:prod` | Sirve la build |
+| `npm test` | Tests unitarios (Jest) |
+| `npm run test:e2e` | Tests end-to-end |
+| `npm run lint` | ESLint |
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+## Arquitectura
 
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
-```
+Patrón por capas **Controller → Service → Repository** (Prisma), más el **gateway**
+WebSocket y los **interceptors/filters** transversales (respuesta genérica,
+cifrado, excepciones).
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Módulos: `auth`, `users`, `contacts`, `blocked-users`, `conversations`,
+`messages`, `calls`, `upload`.
 
-## Resources
+Detalle completo (endpoints, eventos WebSocket, modelo de datos) en
+**[`docs/architecture.md`](docs/architecture.md)**.
 
-Check out a few resources that may come in handy when working with NestJS:
+## Funcionalidades
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- **Auth**: registro, login, refresh, logout, `GET /me` (JWT access + refresh).
+- **Perfil y usuarios**: datos, avatar, estado online.
+- **Contactos y bloqueos**.
+- **Conversaciones 1:1**: listar, buscar, archivar, no leídos, último mensaje.
+- **Mensajería**: texto y multimedia, responder, editar, eliminar (mí/todos),
+  reaccionar, fijar, reenviar, buscar.
+- **Tiempo real** (Socket.io): nuevos mensajes, estados (entregado/leído), typing,
+  presencia online.
+- **Llamadas WebRTC**: señalización (offer/answer/ICE) vía WebSocket.
+- **Subida de multimedia** a S3 y **GIFs** vía Giphy.
 
-## Support
+## Seguridad y cifrado
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+- **Helmet**, CORS configurable, JWT con refresh, Swagger condicionado a entorno.
+- **Cifrado de capa de aplicación (QCipher)** en dos capas (transporte + at-rest).
 
-## Stay in touch
+> ⚠️ **Importante:** el manejo actual de **contraseñas y refresh tokens usa cifrado
+> reversible (no hashing bcrypt)**, lo cual es un **riesgo de seguridad conocido**.
+> Lee la sección de seguridad de **[`docs/encryption.md`](docs/encryption.md)** antes
+> de desplegar.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+## Flujo de trabajo
 
-## License
+- `main` protegida — todo cambio entra por **feature branch → PR → review → merge**.
+- Conventional Commits.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+## Licencia
+
+Privado — QuickChat.

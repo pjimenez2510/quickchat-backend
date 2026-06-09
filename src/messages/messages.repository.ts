@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service.js';
+import { encryptAtRest, decryptAtRest } from '../common/crypto/keys.js';
 
 const MESSAGE_INCLUDE = {
   sender: {
@@ -17,11 +18,29 @@ const MESSAGE_INCLUDE = {
   },
 } as const;
 
+interface MessageRow {
+  content: string | null;
+  reply_to?: { content: string | null } | null;
+}
+
+function decryptRow<T extends MessageRow>(row: T): T {
+  row.content = decryptAtRest(row.content);
+  if (row.reply_to) {
+    row.reply_to.content = decryptAtRest(row.reply_to.content);
+  }
+  return row;
+}
+
+function decryptRows<T extends MessageRow>(rows: T[]): T[] {
+  for (const row of rows) decryptRow(row);
+  return rows;
+}
+
 @Injectable()
 export class MessagesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  create(data: {
+  async create(data: {
     conversationId: string;
     senderId: string;
     content?: string;
@@ -29,26 +48,31 @@ export class MessagesRepository {
     mediaUrl?: string;
     replyToId?: string;
   }) {
-    return this.prisma.message.create({
+    const storedContent =
+      data.content != null ? encryptAtRest(data.content) : null;
+
+    const message = await this.prisma.message.create({
       data: {
         conversation_id: data.conversationId,
         sender_id: data.senderId,
-        content: data.content ?? null,
+        content: storedContent,
         type: (data.type as never) ?? 'TEXT',
         media_url: data.mediaUrl ?? null,
         reply_to_id: data.replyToId ?? null,
       },
       include: MESSAGE_INCLUDE,
     });
+
+    return decryptRow(message);
   }
 
-  findByConversation(
+  async findByConversation(
     conversationId: string,
     userId: string,
     cursor?: string,
     take = 50,
   ) {
-    return this.prisma.message.findMany({
+    const messages = await this.prisma.message.findMany({
       where: {
         conversation_id: conversationId,
         deleted_for_all: false,
@@ -61,13 +85,15 @@ export class MessagesRepository {
       take,
       ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}),
     });
+    return decryptRows(messages);
   }
 
-  findById(id: string) {
-    return this.prisma.message.findUnique({
+  async findById(id: string) {
+    const message = await this.prisma.message.findUnique({
       where: { id },
       include: MESSAGE_INCLUDE,
     });
+    return message ? decryptRow(message) : null;
   }
 
   markAsDelivered(messageId: string) {
@@ -88,12 +114,18 @@ export class MessagesRepository {
     });
   }
 
-  update(id: string, data: Record<string, unknown>) {
-    return this.prisma.message.update({
+  async update(id: string, data: Record<string, unknown>) {
+    const patch: Record<string, unknown> = { ...data };
+    if (typeof patch['content'] === 'string') {
+      patch['content'] = encryptAtRest(patch['content']);
+    }
+
+    const message = await this.prisma.message.update({
       where: { id },
-      data,
+      data: patch,
       include: MESSAGE_INCLUDE,
     });
+    return decryptRow(message);
   }
 
   deleteForMe(messageId: string, userId: string) {
@@ -134,18 +166,33 @@ export class MessagesRepository {
     });
   }
 
-  searchInConversation(conversationId: string, query: string, userId: string) {
-    return this.prisma.message.findMany({
+  /**
+   * Búsqueda sobre contenido cifrado at-rest.
+   * Traemos todos los mensajes de la conversación, descifra en memoria
+   * y filtra. Funciona pero NO escala bien (acorde a la naturaleza
+   * académica del proyecto).
+   */
+  async searchInConversation(
+    conversationId: string,
+    query: string,
+    userId: string,
+  ) {
+    const all = await this.prisma.message.findMany({
       where: {
         conversation_id: conversationId,
-        content: { contains: query, mode: 'insensitive' },
         deleted_for_all: false,
         NOT: { deleted_by: { some: { user_id: userId } } },
+        content: { not: null },
       },
       include: MESSAGE_INCLUDE,
       orderBy: { created_at: 'desc' },
-      take: 20,
     });
+
+    const decrypted = decryptRows(all);
+    const needle = query.toLowerCase();
+    return decrypted
+      .filter((m) => (m.content ?? '').toLowerCase().includes(needle))
+      .slice(0, 20);
   }
 
   countPinnedMessages(conversationId: string) {
@@ -154,11 +201,12 @@ export class MessagesRepository {
     });
   }
 
-  getPinnedMessages(conversationId: string) {
-    return this.prisma.message.findMany({
+  async getPinnedMessages(conversationId: string) {
+    const messages = await this.prisma.message.findMany({
       where: { conversation_id: conversationId, is_pinned: true },
       include: MESSAGE_INCLUDE,
       orderBy: { created_at: 'desc' },
     });
+    return decryptRows(messages);
   }
 }
