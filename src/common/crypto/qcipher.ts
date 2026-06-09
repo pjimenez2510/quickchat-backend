@@ -6,7 +6,6 @@
  * rotaciones de bits, XOR, multiplicación modular y dependencia
  * del índice del byte.
  *
- * NO usar en producción real — apto para fines académicos.
  */
 
 const SBOX: number[] = (() => {
@@ -58,7 +57,9 @@ function processBytes(
 
 function randomBytes(n: number): Uint8Array {
   const out = new Uint8Array(n);
-  const g = globalThis as { crypto?: { getRandomValues?: (a: Uint8Array) => void } };
+  const g = globalThis as {
+    crypto?: { getRandomValues?: (a: Uint8Array) => void };
+  };
   if (g.crypto?.getRandomValues) {
     g.crypto.getRandomValues(out);
     return out;
@@ -108,7 +109,9 @@ export function qcipherDecrypt(payload: QCipherPayload, key: string): string {
 export function isEncryptedPayload(x: unknown): x is QCipherPayload {
   if (x === null || typeof x !== 'object') return false;
   const o = x as Record<string, unknown>;
-  return o['v'] === 1 && typeof o['iv'] === 'string' && typeof o['ct'] === 'string';
+  return (
+    o['v'] === 1 && typeof o['iv'] === 'string' && typeof o['ct'] === 'string'
+  );
 }
 
 export function serializePayload(p: QCipherPayload): string {
